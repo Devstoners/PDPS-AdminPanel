@@ -1,6 +1,9 @@
 import React from "react"
 import { Redirect } from "react-router-dom"
 
+//Users
+import UserOfficer from "../pages/Users/UserOfficer/index"
+
 // Pages Component
 import Chat from "../pages/Chat/Chat"
 
@@ -178,6 +181,9 @@ import ContactsList from "../pages/Contacts/ContactList/contacts-list"
 import ContactsProfile from "../pages/Contacts/ContactsProfile/contacts-profile"
 
 const authProtectedRoutes = [
+  //Users
+  { path: "/user-officer", component: UserOfficer },
+
   { path: "/dashboard", component: Dashboard },
   { path: "/dashboard-saas", component: DashboardSaas },
   { path: "/dashboard-crypto", component: DashboardCrypto },
