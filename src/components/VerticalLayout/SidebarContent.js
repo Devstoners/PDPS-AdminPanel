@@ -128,33 +128,49 @@ const SidebarContent = props => {
                 </li>
               </ul>
             </li>
-
-            <li>
-              <Link to="/#" className="has-arrow">
+			
+			<li>
+              <Link to="/#" className="has-arrow ">
                 <i className="bx bx-user"></i>
-                <span>{props.t("User")}</span>
+                <span>{props.t("Officer")}</span>
               </Link>
               <ul className="sub-menu">
                 <li>
-                  <Link to="/user-officer">
-					{props.t("Officer")}
-				  </Link>
+                  <Link to="/projects-list">{props.t("Add Types")}</Link>
                 </li>
                 <li>
-                  <Link to="/ecommerce-product-detail/1">
-                    {props.t("Member")}
-                  </Link>
+                  <Link to="/user-officer">{props.t("Officer")}</Link>
+                </li>
+              </ul>
+            </li>
+			
+			<li>
+              <Link to="/#" className="has-arrow ">
+                <i className="bx bx-user"></i>
+                <span>{props.t("Member")}</span>
+              </Link>
+              <ul className="sub-menu">
+                <li>
+                  <Link to="/projects-list">{props.t("Add Types")}</Link>
                 </li>
                 <li>
-                  <Link to="/ecommerce-orders">
-				    {props.t("Grama Niladari")}
-				  </Link>
+                  <Link to="/user-member">{props.t("Member")}</Link>
+                </li>
+              </ul>
+            </li>
+			
+			<li>
+              <Link to="/#" className="has-arrow ">
+                <i className="bx bx-user"></i>
+                <span>{props.t("Grama Niladari")}</span>
+              </Link>
+              <ul className="sub-menu">
+                <li>
+                  <Link to="/projects-list">{props.t("Add Division")}</Link>
                 </li>
                 <li>
-                  <Link to="/ecommerce-customers">
-					{props.t("Supplier")}
-				  </Link>
-                </li> 
+                  <Link to="/user-member">{props.t("Grama Niladari")}</Link>
+                </li>
               </ul>
             </li>
 
@@ -164,9 +180,7 @@ const SidebarContent = props => {
                 <span>{props.t("Backup")}</span>
               </Link>
             </li>
-            
-
-   
+			
           </ul>
         </div>
       </SimpleBar>
