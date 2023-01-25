@@ -101,14 +101,14 @@ const SidebarContent = props => {
 			</li>
 
             <li>
-              <Link to="/calendar" >
+              <Link to="/news-create" >
                 <i className="bx bx-news"></i>
                 <span>{props.t("News")}</span>
               </Link>
             </li>
 
             <li>
-              <Link to="/chat" >
+              <Link to="/gallery-add" >
                 <i className="bx bx-images"></i>
                 <span>{props.t("Gallery")}</span>
               </Link>
@@ -136,10 +136,13 @@ const SidebarContent = props => {
               </Link>
               <ul className="sub-menu">
                 <li>
-                  <Link to="/projects-list">{props.t("Add Types")}</Link>
+                  <Link to="">{props.t("Position")}</Link>
+                </li>
+				<li>
+                  <Link to="">{props.t("Subject")}</Link>
                 </li>
                 <li>
-                  <Link to="/user-officer">{props.t("Officer")}</Link>
+                  <Link to="/user-officer">{props.t("Officer List")}</Link>
                 </li>
               </ul>
             </li>
@@ -151,10 +154,16 @@ const SidebarContent = props => {
               </Link>
               <ul className="sub-menu">
                 <li>
-                  <Link to="/projects-list">{props.t("Add Types")}</Link>
+                  <Link to="/member-division">{props.t("Division")}</Link>
+                </li>
+				<li>
+                  <Link to="/member-party">{props.t("Party")}</Link>
+                </li>
+				<li>
+                  <Link to="/member-position">{props.t("Position")}</Link>
                 </li>
                 <li>
-                  <Link to="/user-member">{props.t("Member")}</Link>
+                  <Link to="/user-member">{props.t("Member List")}</Link>
                 </li>
               </ul>
             </li>
@@ -166,10 +175,10 @@ const SidebarContent = props => {
               </Link>
               <ul className="sub-menu">
                 <li>
-                  <Link to="/projects-list">{props.t("Add Division")}</Link>
+                  <Link to="/user-grama-div">{props.t("Division")}</Link>
                 </li>
                 <li>
-                  <Link to="/user-member">{props.t("Grama Niladari")}</Link>
+                  <Link to="/user-grama">{props.t("Grama Niladari List")}</Link>
                 </li>
               </ul>
             </li>

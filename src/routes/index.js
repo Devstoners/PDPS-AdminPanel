@@ -1,9 +1,20 @@
 import React from "react"
 import { Redirect } from "react-router-dom"
 
+//News
+import NewsCreate from "../pages/News/News"
+
+//Gallery
+import AddAlbum from "../pages/Gallery/AddAlbum"
+
 //Users
 import UserOfficer from "../pages/Users/UserOfficer/index"
-import UserMember from "../pages/Users/UserMember/index"
+import UserMember from "../pages/Users/Member/index"
+import Position from "../pages/Users/Member/Position"
+import Division from "../pages/Users/Member/Division"
+import Party from  "../pages/Users/Member/Party"
+import UserGrama from "../pages/Users/UserGrama/index"
+import UserGramaDivision from "../pages/Users/UserGrama/UserGramaDivision"
 
 // Pages Component
 import Chat from "../pages/Chat/Chat"
@@ -181,10 +192,23 @@ import ContactsGrid from "../pages/Contacts/contacts-grid"
 import ContactsList from "../pages/Contacts/ContactList/contacts-list"
 import ContactsProfile from "../pages/Contacts/ContactsProfile/contacts-profile"
 
+
 const authProtectedRoutes = [
+  //News
+  { path: "/news-create", component: NewsCreate },
+
+  //Gallery
+  { path: "/gallery-add", component: AddAlbum },
+
   //Users
   { path: "/user-officer", component: UserOfficer },
   { path: "/user-member", component: UserMember },
+  { path: "/member-position", component: Position },
+  { path: "/member-division", component: Division },
+  { path: "/member-party", component: Party },
+  { path: "/user-grama", component: UserGrama },
+  { path: "/user-grama-div", component: UserGramaDivision },
+
 
   { path: "/dashboard", component: Dashboard },
   { path: "/dashboard-saas", component: DashboardSaas },

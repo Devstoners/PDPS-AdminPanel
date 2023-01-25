@@ -7,7 +7,7 @@ const DeleteModal = ({ show, onDeleteClick, onCloseClick }) => {
     <Modal size="sm" isOpen={show} toggle={onCloseClick} centered={true}>
       <div className="modal-content">
         <ModalBody className="px-4 py-5 text-center">
-          <button type="button" onClick={onDeleteClick} className="btn-close position-absolute end-0 top-0 m-3"></button>
+          <button type="button" onClick={onCloseClick} className="btn-close position-absolute end-0 top-0 m-3"></button>
           <div className="avatar-sm mb-4 mx-auto">
             <div className="avatar-title bg-primary text-primary bg-opacity-10 font-size-20 rounded-3">
               <i className="mdi mdi-trash-can-outline"></i>

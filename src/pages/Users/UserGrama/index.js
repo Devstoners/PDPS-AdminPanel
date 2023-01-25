@@ -21,13 +21,12 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 
 
-import { Name, Email, Img, Type, Party, Registered, Status  } from "./UserMemberCol";
+import { Name, Email, Img, Division, Registered, Status  } from "./UserGramaCol";
 
 //Import Breadcrumb
 import Breadcrumbs from "components/Common/Breadcrumb";
 import DeleteModal from "components/Common/DeleteModal";
-//import AddModal from "./AddModal";
-//import EditModal from "./EditModal";
+
 
 import {
   getUsers as onGetUsers,
@@ -57,17 +56,15 @@ const UserMember = props => {
     initialValues: {
       name: (contact && contact.name) || "",
 	  email: (contact && contact.email) || "",
-      type: (contact && contact.type) || "",
+      division: (contact && contact.division) || "",
       registered: (contact && contact.registered) || "",
       status: (contact && contact.status) || "",
-      party: (contact && contact.party) || "",
     },
 	
     validationSchema: Yup.object({
       name: Yup.string().required("Please Enter Name"),
 	  email: Yup.string().required("Please Enter Email"),
-      type: Yup.string().required("Please Enter  Type"),
-      party: Yup.array().required("Please Select Party Name"),      
+      division: Yup.string().required("Please Enter  Division"),    
       status: Yup.number().required("Please Select Enable or Disable"),
     }),
 	
@@ -80,8 +77,7 @@ const UserMember = props => {
           id: contact.id,
           name: values.name,
 		  email: values.email,
-          party: values.party,
-          type: values.type,
+          division: values.division,
           status: values.status,
         };
         dispatch(onUpdateUser(updateUser));
@@ -94,8 +90,7 @@ const UserMember = props => {
           id: Math.floor(Math.random() * (30 - 20)) + 20,
           name: values["name"],
 		  email: values["email"],
-		  party: values["party"],
-          type: values["type"],           
+          division: values["division"],           
         };
         dispatch(onAddNewUser(newUser));
         validation.resetForm();
@@ -168,14 +163,14 @@ const UserMember = props => {
       },
 	  
 	  {
-        Header: "Type",
-        accessor: "type",
+        Header: "Division",
+        accessor: "division",
         disableFilters: true,
         Cell: cellProps => {
           return (
             <>
               {" "}
-              <Type {...cellProps} />{" "}
+              <Division {...cellProps} />{" "}
             </>
           );
         },
@@ -272,8 +267,7 @@ const UserMember = props => {
       id: user.id,
       name: user.name,
 	  email: user.email,
-      party: user.party,
-      type: user.type,
+      division: user.division,
       status: user.status,
     });
     setIsEdit(true);
@@ -328,7 +322,7 @@ const UserMember = props => {
 {/*------------------ Render Breadcrumbs----------------- */}	  
       <div className="page-content">
         <Container fluid>
-          <Breadcrumbs title="User" breadcrumbItem="Member" />
+          <Breadcrumbs title="Grama Niladari" breadcrumbItem="Grama Niladari" />
           <Row>
             <Col lg="12">
               <Card>
@@ -407,46 +401,24 @@ const UserMember = props => {
                               ) : null}
                             </div>
                             <div className="mb-3">
-                              <Label className="form-label">Type</Label>
+                              <Label className="form-label">Division</Label>
 							  
 							   <Select
-								name = "type"
+								name = "division"
 								isMulti={true}
 								onChange={() => {}}
 								className="select2-selection"
 								/>
                               
                                 
-                              {validation.touched.type &&
-                                validation.errors.type ? (
-                                <FormFeedback type="invalid">
-                                  {validation.errors.type}
+                              {validation.touched.division &&
+                                validation.errors.division ? (
+                                <FormFeedback division="invalid">
+                                  {validation.errors.division}
                                 </FormFeedback>
                               ) : null}
                             </div>
-                            <div className="mb-3">
-                              <Label className="form-label">Party</Label>
-                              <Select
-								name = "party"
-								isMulti={false}
-								onChange={() => {}}
-								className="select2-selection"
-                                onBlur={validation.handleBlur}
-                                value={validation.values.party || ""}
-                                invalid={
-                                  validation.touched.party &&
-                                    validation.errors.party
-                                    ? true
-                                    : false
-                                }
-                              />
-                              {validation.touched.party &&
-                                validation.errors.party ? (
-                                <FormFeedback type="invalid">
-                                  {validation.errors.party}
-                                </FormFeedback>
-                              ) : null}
-                            </div>
+                           
                           </Col>
                         </Row>
                         <Row>
@@ -464,7 +436,7 @@ const UserMember = props => {
                       </Form>
                     </ModalBody>
                   </Modal>
-{/*-----------------Add & Edit user form Start------------------*/}
+{/*-----------------Add & Edit user form Ends------------------*/}
 				  
                 </CardBody>
               </Card>

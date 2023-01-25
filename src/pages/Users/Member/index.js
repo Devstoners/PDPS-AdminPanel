@@ -21,7 +21,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 
 
-import { Name, Email, Img, Position, Registered, Status  } from "./UserOfficerCol";
+import { Name, Email, Img, Position, Area, Party, Registered, Status  } from "./MemberCol";
 
 //Import Breadcrumb
 import Breadcrumbs from "components/Common/Breadcrumb";
@@ -57,14 +57,17 @@ const UserMember = props => {
       name: (contact && contact.name) || "",
 	  email: (contact && contact.email) || "",
       position: (contact && contact.position) || "",
-      registered: (contact && contact.registered) || "",
       status: (contact && contact.status) || "",
+      division: (contact && contact.division) || "",
+      party: (contact && contact.party) || "",
     },
 	
     validationSchema: Yup.object({
       name: Yup.string().required("Please Enter Name"),
 	  email: Yup.string().required("Please Enter Email"),
-      position: Yup.string().required("Please Enter  Position"),    
+      position: Yup.string().required("Please Enter  Position"),
+      division: Yup.array().required("Please Select Division"),
+      party: Yup.array().required("Please Select Party Name"),
       status: Yup.number().required("Please Select Enable or Disable"),
     }),
 	
@@ -77,6 +80,8 @@ const UserMember = props => {
           id: contact.id,
           name: values.name,
 		  email: values.email,
+          party: values.party,
+          division: values.division,
           position: values.position,
           status: values.status,
         };
@@ -90,7 +95,9 @@ const UserMember = props => {
           id: Math.floor(Math.random() * (30 - 20)) + 20,
           name: values["name"],
 		  email: values["email"],
-          position: values["position"],           
+		  party: values["party"],
+		  division: values["division"],
+          position: values["position"],
         };
         dispatch(onAddNewUser(newUser));
         validation.resetForm();
@@ -267,6 +274,7 @@ const UserMember = props => {
       id: user.id,
       name: user.name,
 	  email: user.email,
+      party: user.party,
       position: user.position,
       status: user.status,
     });
@@ -322,7 +330,7 @@ const UserMember = props => {
 {/*------------------ Render Breadcrumbs----------------- */}	  
       <div className="page-content">
         <Container fluid>
-          <Breadcrumbs title="User" breadcrumbItem="Officer" />
+          <Breadcrumbs title="Member" breadcrumbItem="Member" />
           <Row>
             <Col lg="12">
               <Card>
@@ -400,25 +408,81 @@ const UserMember = props => {
                                 </FormFeedback>
                               ) : null}
                             </div>
+
                             <div className="mb-3">
-                              <Label className="form-label">Position</Label>
-							  
-							   <Select
-								name = "position"
-								isMulti={true}
+                              <Label className="form-label">Division</Label>
+
+                              <Select
+                                  name = "division"
+                                  isMulti={true}
+                                  onChange={() => {}}
+                                  className="select2-selection"
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.division || ""}
+                                  invalid={
+                                    validation.touched.division &&
+                                    validation.errors.division
+                                        ? true
+                                        : false
+                                  }
+                              />
+
+                              {validation.touched.division &&
+                              validation.errors.division ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.division}
+                                  </FormFeedback>
+                              ) : null}
+                            </div>
+
+                            <div className="mb-3">
+                              <Label className="form-label">Party</Label>
+                              <Select
+								name = "party"
+								isMulti={false}
 								onChange={() => {}}
 								className="select2-selection"
-								/>
-                              
-                                
-                              {validation.touched.position &&
-                                validation.errors.position ? (
-                                <FormFeedback position="invalid">
-                                  {validation.errors.position}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.party || ""}
+                                invalid={
+                                  validation.touched.party &&
+                                    validation.errors.party
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.party &&
+                                validation.errors.party ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.party}
                                 </FormFeedback>
                               ) : null}
                             </div>
-                           
+
+                            <div className="mb-3">
+                              <Label className="form-label">Position</Label>
+
+                              <Select
+                                  name = "position"
+                                  isMulti={true}
+                                  onChange={() => {}}
+                                  className="select2-selection"
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.position || ""}
+                                  invalid={
+                                    validation.touched.position &&
+                                    validation.errors.position
+                                        ? true
+                                        : false
+                                  }
+                              />
+                              {validation.touched.position &&
+                              validation.errors.position ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.position}
+                                  </FormFeedback>
+                              ) : null}
+                            </div>
                           </Col>
                         </Row>
                         <Row>

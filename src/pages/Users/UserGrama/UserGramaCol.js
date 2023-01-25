@@ -23,11 +23,7 @@ const Email = (cell) => {
     return cell.value ? cell.value : '';
 };
 
-const Party = (cell) => {
-    return cell.value ? cell.value : '';
-};
-
-const Type = (cell) => {
+const Division = (cell) => {
     return cell.value ? cell.value : '';
 };
 
@@ -65,8 +61,7 @@ const Status = (cell) => {
 export {
     Name,
     Email,
-	Party,
-    Type,
+    Division,
     Img,
 	Registered,
 	Status

@@ -23,7 +23,15 @@ const Email = (cell) => {
     return cell.value ? cell.value : '';
 };
 
+const Party = (cell) => {
+    return cell.value ? cell.value : '';
+};
+
 const Position = (cell) => {
+    return cell.value ? cell.value : '';
+};
+
+const Area = (cell) => {
     return cell.value ? cell.value : '';
 };
 
@@ -61,7 +69,9 @@ const Status = (cell) => {
 export {
     Name,
     Email,
+	Party,
     Position,
+    Area,
     Img,
 	Registered,
 	Status
