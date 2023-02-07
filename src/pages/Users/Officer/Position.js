@@ -1,41 +1,43 @@
+
 import React, { useEffect, useState, useRef,useMemo } from "react";
 import PropTypes from 'prop-types';
 
 //import components
 import Breadcrumbs from '../../../components/Common/Breadcrumb';
 import DeleteModal from "../../../components/Common/DeleteModal";
-import EditDivisionModal from "./EditDivisionModal";
+import EditPositionModal from "./EditPositionModal";
 import TableContainer from '../../../components/Common/TableContainer';
 import DatatableTables from "../../Tables/DatatableTables";
 import {Link} from "react-router-dom";
 
 import {
+    Table,
     Form,
     Row,
     Col,
     Card,
     CardBody,
     CardTitle,
-    UncontrolledTooltip, Label, Input, Button, FormFeedback,
+    CardSubtitle,
+    UncontrolledTooltip, FormGroup, Label, Input, Button, FormFeedback,
 } from "reactstrap"
 
-// Formik validation
+import {useFormik} from "formik";
 import * as Yup from "yup";
-import { useFormik } from "formik";
 
-function Division() {
+function Position() {
 
-    const [division, setDivision] = useState();
+    const [position, setPosition] = useState();
     // Form validation
     const validation = useFormik({
         // enableReinitialize : use this flag when initial values needs to be changed
         enableReinitialize: true,
 
         initialValues: {
-            divname: (division && division.divname) || "",
+            posname: (position && position.posname) || "",
         },
         validationSchema: Yup.object({
-            divname: Yup.string().required("Please Enter Division Name"),
+            posname: Yup.string().required("Please Enter Position Name"),
         }),
         onSubmit: (values) => {
             console.log("values", values);
@@ -44,25 +46,24 @@ function Division() {
     });
 
     const [formValidation, setValidation] = useState({
-        divid: null,
-        divname: null,
+        posid: null,
+        posname: null,
     });
 
     function handleSubmit(e) {
         e.preventDefault();
         const modifiedV = { ...formValidation };
-        var divname = document.getElementById("divname").value;
+        var posname = document.getElementById("posname").value;
 
 
-        if (divname === "") {
-            modifiedV["divname"] = false;
+        if (posname === "") {
+            modifiedV["posname"] = false;
         } else {
-            modifiedV["divname"] = true;
+            modifiedV["posname"] = true;
         }
         setValidation(modifiedV);
     }
-
-    const columns = useMemo(
+  const columns = useMemo(
       () => [
         {
           Header: 'ID',
@@ -70,8 +71,8 @@ function Division() {
           disableFilters: true,
         },
         {
-          Header: 'Division',
-          accessor: 'division',
+          Header: 'Position',
+          accessor: 'position',
           disableFilters: true,
         },
         {
@@ -122,11 +123,11 @@ function Division() {
   const data = [
     {
       "id": "1",
-      "division": "Aluthgama"
+      "position": "Secretary"
     },
     {
       "id": "2",
-      "division": "Paranagama"
+      "position": "Development Officer"
     },
   ];
 
@@ -139,11 +140,11 @@ function Division() {
     };
 
     //Edit function variables
-    const [editDivisionModal, setEditDivisionModal] = useState(false);
+    const [editPositionModal, setEditPositionModal] = useState(false);
 
     //Edit function
     const onClickEdit = position => {
-        setEditDivisionModal(true);
+        setEditPositionModal(true);
     };
 
   //meta title
@@ -158,14 +159,14 @@ function Division() {
       />
 
       {/*Edit pop up window*/}
-      <EditDivisionModal
-          show={editDivisionModal}
-          onCloseClick={() => setEditDivisionModal(false)}
+      <EditPositionModal
+          show={editPositionModal}
+          onCloseClick={() => setEditPositionModal(false)}
       />
 
       <div className="page-content">
         <div className="container-fluid">
-          <Breadcrumbs title="Member" breadcrumbItem="Division" />
+          <Breadcrumbs title="Officer" breadcrumbItem="Position" />
             <Row>
                 <Col xl={4}>
                     <Card>
@@ -191,26 +192,25 @@ function Division() {
                                 </div>
                                 */}
                                 <div className="mb-3">
-                                    <Label htmlFor="divname" className="col-form-label col-lg-4">
-                                        Division Name
+                                    <Label htmlFor="posname" className="col-form-label col-lg-4">
+                                        Position Name
                                     </Label>
                                     <Input
-                                        id="divname"
-                                        name="divname"
+                                        id="posname"
+                                        name="posname"
                                         type="text"
                                         className="form-control"
-                                        placeholder="Enter Division ..."
+                                        placeholder="Enter Position ..."
                                         onChange={validation.handleChange}
                                         onBlur={validation.handleBlur}
-                                        value={validation.values.divname || ""}
+                                        value={validation.values.posname || ""}
                                         invalid={
-                                            validation.touched.divname && validation.errors.divname ? true : false
+                                            validation.touched.posname && validation.errors.posname ? true : false
                                         }
                                     />
-                                    {validation.touched.divname && validation.errors.divname ? (
-                                        <FormFeedback type="invalid">{validation.errors.divname}</FormFeedback>
+                                    {validation.touched.posname && validation.errors.posname ? (
+                                        <FormFeedback type="invalid">{validation.errors.posname}</FormFeedback>
                                     ) : null}
-
                                 </div>
                                 <div>
                                     <button type="submit" className="btn btn-primary w-md">
@@ -224,7 +224,7 @@ function Division() {
                 <Col xl={8}>
                     <Card>
                         <CardBody>
-                            <CardTitle className="h4"> Edit | Delete </CardTitle>
+                            <CardTitle className="h4">View | Edit | Delete </CardTitle>
                             <div className="table-responsive">
                                 <TableContainer
                                     columns={columns}
@@ -250,4 +250,4 @@ DatatableTables.propTypes = {
 };
 
 
-export default Division;
+export default Position;

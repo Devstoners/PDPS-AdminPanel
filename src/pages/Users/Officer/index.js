@@ -21,7 +21,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 
 
-import { Name, Email, Img, Position, Division, Party, Registered, Status  } from "./MemberCol";
+import { Name, Email, Img, Position, Registered, Status  } from "./OfficerCol";
 
 //Import Breadcrumb
 import Breadcrumbs from "components/Common/Breadcrumb";
@@ -59,14 +59,12 @@ const Member = props => {
       position: (contact && contact.position) || "",
       registered: (contact && contact.registered) || "",
       status: (contact && contact.status) || "",
-      party: (contact && contact.party) || "",
     },
 	
     validationSchema: Yup.object({
       name: Yup.string().required("Please Enter Name"),
 	  email: Yup.string().required("Please Enter Email"),
-      position: Yup.string().required("Please Enter  Position"),
-      party: Yup.array().required("Please Select Party Name"),
+      position: Yup.string().required("Please Enter  Position"),    
       status: Yup.number().required("Please Select Enable or Disable"),
     }),
 	
@@ -79,8 +77,6 @@ const Member = props => {
           id: contact.id,
           name: values.name,
 		  email: values.email,
-          party: values.party,
-          division: values.division,
           position: values.position,
           status: values.status,
         };
@@ -94,9 +90,7 @@ const Member = props => {
           id: Math.floor(Math.random() * (30 - 20)) + 20,
           name: values["name"],
 		  email: values["email"],
-		  party: values["party"],
-		  division: values["division"],
-          position: values["position"],
+          position: values["position"],           
         };
         dispatch(onAddNewUser(newUser));
         validation.resetForm();
@@ -273,7 +267,6 @@ const Member = props => {
       id: user.id,
       name: user.name,
 	  email: user.email,
-      party: user.party,
       position: user.position,
       status: user.status,
     });
@@ -329,7 +322,7 @@ const Member = props => {
 {/*------------------ Render Breadcrumbs----------------- */}	  
       <div className="page-content">
         <Container fluid>
-          <Breadcrumbs title="Member" breadcrumbItem="Member List" />
+          <Breadcrumbs title="Officer" breadcrumbItem="Officer List" />
           <Row>
             <Col lg="12">
               <Card>
@@ -408,66 +401,24 @@ const Member = props => {
                               ) : null}
                             </div>
                             <div className="mb-3">
-                              <Label className="form-label">Division</Label>
-
-                              <Select
-                                  name = "division"
-                                  isMulti={true}
-                                  onChange={() => {}}
-                                  className="select2-selection"
-                              />
-
-
-                              {validation.touched.division &&
-                              validation.errors.division ? (
-                                  <FormFeedback type="invalid">
-                                    {validation.errors.division}
-                                  </FormFeedback>
-                              ) : null}
-                            </div>
-
-                            <div className="mb-3">
-                              <Label className="form-label">Party</Label>
-                              <Select
-								name = "party"
-								isMulti={false}
+                              <Label className="form-label">Position</Label>
+							  
+							   <Select
+								name = "position"
+								isMulti={true}
 								onChange={() => {}}
 								className="select2-selection"
-                                onBlur={validation.handleBlur}
-                                value={validation.values.party || ""}
-                                invalid={
-                                  validation.touched.party &&
-                                    validation.errors.party
-                                    ? true
-                                    : false
-                                }
-                              />
-                              {validation.touched.party &&
-                                validation.errors.party ? (
-                                <FormFeedback type="invalid">
-                                  {validation.errors.party}
+								/>
+                              
+                                
+                              {validation.touched.position &&
+                                validation.errors.position ? (
+                                <FormFeedback position="invalid">
+                                  {validation.errors.position}
                                 </FormFeedback>
                               ) : null}
                             </div>
-
-                            <div className="mb-3">
-                              <Label className="form-label">Position</Label>
-
-                              <Select
-                                  name = "position"
-                                  isMulti={true}
-                                  onChange={() => {}}
-                                  className="select2-selection"
-                              />
-
-
-                              {validation.touched.position &&
-                              validation.errors.position ? (
-                                  <FormFeedback type="invalid">
-                                    {validation.errors.position}
-                                  </FormFeedback>
-                              ) : null}
-                            </div>
+                           
                           </Col>
                         </Row>
                         <Row>

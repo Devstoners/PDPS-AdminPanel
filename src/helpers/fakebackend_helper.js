@@ -87,6 +87,30 @@ const postJwtRegister = (url, data) => {
     });
 };
 
+export const getComplain = () => get(url.GET_COMPLAIN);
+
+// add complain
+export const addNewComplain = complain => post(url.ADD_NEW_COMPLAIN, complain);
+
+// update complain
+export const updateComplain = complain => put(url.UPDATE_COMPLAIN, complain);
+
+// delete complain
+export const deleteComplain = complain => del(url.DELETE_COMPLAIN, { headers: { complain } });
+
+
+
+export const getNews = () => get(url.GET_NEWS);
+
+// add news
+export const addNewNews = news => post(url.ADD_NEW_NEWS, news);
+
+// update news
+export const updateNews = news => put(url.UPDATE_NEWS, news);
+
+// delete news
+export const deleteNews = news => del(url.DELETE_NEWS, { headers: { news } });
+
 // Login Method
 const postJwtLogin = data => post(url.POST_FAKE_JWT_LOGIN, data);
 

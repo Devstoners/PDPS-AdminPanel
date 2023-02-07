@@ -177,7 +177,7 @@ const TableContainer = ({
                 onClick={handleUserClick}
               >
                 <i className="mdi mdi-plus-circle-outline me-1" />
-                Create New User
+                Add New
               </Button>
             </div>
           </Col>

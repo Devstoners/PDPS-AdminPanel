@@ -4,38 +4,39 @@ import PropTypes from 'prop-types';
 //import components
 import Breadcrumbs from '../../../components/Common/Breadcrumb';
 import DeleteModal from "../../../components/Common/DeleteModal";
-import EditDivisionModal from "./EditDivisionModal";
+import EditSubjectModal from "./EditSubjectModal";
 import TableContainer from '../../../components/Common/TableContainer';
 import DatatableTables from "../../Tables/DatatableTables";
 import {Link} from "react-router-dom";
 
 import {
+    Table,
     Form,
     Row,
     Col,
     Card,
     CardBody,
     CardTitle,
-    UncontrolledTooltip, Label, Input, Button, FormFeedback,
+    CardSubtitle,
+    UncontrolledTooltip, FormGroup, Label, Input, Button, FormFeedback,
 } from "reactstrap"
 
-// Formik validation
+import {useFormik} from "formik";
 import * as Yup from "yup";
-import { useFormik } from "formik";
 
-function Division() {
+function Subject() {
 
-    const [division, setDivision] = useState();
+    const [officer, setOfficer] = useState();
     // Form validation
     const validation = useFormik({
         // enableReinitialize : use this flag when initial values needs to be changed
         enableReinitialize: true,
 
         initialValues: {
-            divname: (division && division.divname) || "",
+            subname: (officer && officer.subname) || "",
         },
         validationSchema: Yup.object({
-            divname: Yup.string().required("Please Enter Division Name"),
+            subname: Yup.string().required("Please Enter Subject Name"),
         }),
         onSubmit: (values) => {
             console.log("values", values);
@@ -44,34 +45,34 @@ function Division() {
     });
 
     const [formValidation, setValidation] = useState({
-        divid: null,
-        divname: null,
+        subid: null,
+        subname: null,
     });
 
     function handleSubmit(e) {
         e.preventDefault();
         const modifiedV = { ...formValidation };
-        var divname = document.getElementById("divname").value;
+        var subname = document.getElementById("subname").value;
 
 
-        if (divname === "") {
-            modifiedV["divname"] = false;
+        if (subname === "") {
+            modifiedV["subname"] = false;
         } else {
-            modifiedV["divname"] = true;
+            modifiedV["subname"] = true;
         }
         setValidation(modifiedV);
     }
 
-    const columns = useMemo(
+  const columns = useMemo(
       () => [
         {
           Header: 'ID',
-          accessor: 'id',
+          accessor: 'subid',
           disableFilters: true,
         },
         {
-          Header: 'Division',
-          accessor: 'division',
+          Header: 'Subject',
+          accessor: 'subname',
           disableFilters: true,
         },
         {
@@ -121,12 +122,12 @@ function Division() {
   //Sample data
   const data = [
     {
-      "id": "1",
-      "division": "Aluthgama"
+      "subid": "1",
+      "subname": "Water Bowser supply"
     },
     {
-      "id": "2",
-      "division": "Paranagama"
+      "subid": "2",
+      "subname": "Procurement"
     },
   ];
 
@@ -134,16 +135,16 @@ function Division() {
     const [deleteModal, setDeleteModal] = useState(false);
 
     //Delete function
-    const onClickDelete = position => {
+    const onClickDelete = officer => {
         setDeleteModal(true);
     };
 
     //Edit function variables
-    const [editDivisionModal, setEditDivisionModal] = useState(false);
+    const [editSubjectModal, setEditSubjectModal] = useState(false);
 
     //Edit function
-    const onClickEdit = position => {
-        setEditDivisionModal(true);
+    const onClickEdit = officer => {
+        setEditSubjectModal(true);
     };
 
   //meta title
@@ -158,14 +159,14 @@ function Division() {
       />
 
       {/*Edit pop up window*/}
-      <EditDivisionModal
-          show={editDivisionModal}
-          onCloseClick={() => setEditDivisionModal(false)}
+      <EditSubjectModal
+          show={editSubjectModal}
+          onCloseClick={() => setEditSubjectModal(false)}
       />
 
       <div className="page-content">
         <div className="container-fluid">
-          <Breadcrumbs title="Member" breadcrumbItem="Division" />
+          <Breadcrumbs title="Officer" breadcrumbItem="Subject" />
             <Row>
                 <Col xl={4}>
                     <Card>
@@ -179,38 +180,37 @@ function Division() {
                                 {/*
                                 <div className="mb-3">
                                     <Label htmlFor="posid" className="col-form-label col-lg-2">
-                                        Position ID
+                                        Officer ID
                                     </Label>
                                     <Input
                                         id="posid"
                                         name="posid"
                                         type="number"
                                         className="form-control"
-                                        placeholder="Enter Position ID..."
+                                        placeholder="Enter Officer ID..."
                                     />
                                 </div>
                                 */}
                                 <div className="mb-3">
-                                    <Label htmlFor="divname" className="col-form-label col-lg-4">
-                                        Division Name
+                                    <Label htmlFor="subname" className="col-form-label col-lg-4">
+                                        Subject Name
                                     </Label>
                                     <Input
-                                        id="divname"
-                                        name="divname"
+                                        id="subname"
+                                        name="subname"
                                         type="text"
                                         className="form-control"
-                                        placeholder="Enter Division ..."
+                                        placeholder="Enter Officer ..."
                                         onChange={validation.handleChange}
                                         onBlur={validation.handleBlur}
-                                        value={validation.values.divname || ""}
+                                        value={validation.values.subname || ""}
                                         invalid={
-                                            validation.touched.divname && validation.errors.divname ? true : false
+                                            validation.touched.subname && validation.errors.subname ? true : false
                                         }
                                     />
-                                    {validation.touched.divname && validation.errors.divname ? (
-                                        <FormFeedback type="invalid">{validation.errors.divname}</FormFeedback>
+                                    {validation.touched.subname && validation.errors.subname ? (
+                                        <FormFeedback type="invalid">{validation.errors.subname}</FormFeedback>
                                     ) : null}
-
                                 </div>
                                 <div>
                                     <button type="submit" className="btn btn-primary w-md">
@@ -224,7 +224,7 @@ function Division() {
                 <Col xl={8}>
                     <Card>
                         <CardBody>
-                            <CardTitle className="h4"> Edit | Delete </CardTitle>
+                            <CardTitle className="h4">View | Edit | Delete </CardTitle>
                             <div className="table-responsive">
                                 <TableContainer
                                     columns={columns}
@@ -250,4 +250,4 @@ DatatableTables.propTypes = {
 };
 
 
-export default Division;
+export default Subject;

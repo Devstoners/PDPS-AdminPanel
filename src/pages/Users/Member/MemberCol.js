@@ -31,7 +31,7 @@ const Position = (cell) => {
     return cell.value ? cell.value : '';
 };
 
-const Area = (cell) => {
+const Division = (cell) => {
     return cell.value ? cell.value : '';
 };
 
@@ -71,7 +71,7 @@ export {
     Email,
 	Party,
     Position,
-    Area,
+    Division,
     Img,
 	Registered,
 	Status

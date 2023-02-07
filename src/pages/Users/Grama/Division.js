@@ -165,7 +165,7 @@ function Division() {
 
       <div className="page-content">
         <div className="container-fluid">
-          <Breadcrumbs title="Member" breadcrumbItem="Division" />
+          <Breadcrumbs title="Gramaniladari" breadcrumbItem="Division" />
             <Row>
                 <Col xl={4}>
                     <Card>

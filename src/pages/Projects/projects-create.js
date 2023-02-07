@@ -53,159 +53,211 @@ const ProjectsCreate = () => {
       <div className="page-content">
         <Container fluid>
           {/* Render Breadcrumbs */}
-          <Breadcrumbs title="Projects" breadcrumbItem="Create New" />
-
+          <Breadcrumbs title="Projects" breadcrumbItem="Add New" />
           <Row>
             <Col lg="12">
               <Card>
                 <CardBody>
-                  <CardTitle className="mb-4">Create New Project</CardTitle>
-                  <Form>                   
-                        <FormGroup className="mb-4" row>
-                          <Label
-                            htmlFor="projectname"
-                            className="col-form-label col-lg-2"
-                          >
-                            Project Name
-                          </Label>
-                          <Col lg="10">
-                            <Input
-                              id="projectname"
-                              name="projectname"
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter Project Name..."
-                            />
-                          </Col>
-                        </FormGroup>
-                        <FormGroup className="mb-4" row>
-                          <Label
-                            htmlFor="projectdesc"
-                            className="col-form-label col-lg-2"
-                          >
-                            Project Description
-                          </Label>
-                          <Col lg="10">
+                  <CardTitle className="mb-4">Add Project Details </CardTitle>
+                  <Form>
+                    <div className="mb-5">
+                    <FormGroup className="mb-4" row>
+                      <Label
+                        htmlFor="projectname"
+                        className="col-form-label col-lg-2"
+                      >
+                        Project Name (En)
+                      </Label>
+                      <Col lg="10">
+                        <Input
+                          id="projectname"
+                          name="projectname"
+                          type="text"
+                          className="form-control"
+                          placeholder="Enter Project Name..."
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup className="mb-4" row>
+                      <Label
+                          htmlFor="projectnames"
+                          className="col-form-label col-lg-2"
+                      >
+                        Project Name (Si)
+                      </Label>
+                      <Col lg="10">
+                        <Input
+                            id="projectnames"
+                            name="projectnames"
+                            type="text"
+                            className="form-control"
+                            placeholder="ව්‍යාපෘතියේ නම ඇතුලත් කරන්න..."
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup className="mb-4" row>
+                      <Label
+                          htmlFor="projectnamet"
+                          className="col-form-label col-lg-2"
+                      >
+                        Project Name (Ta)
+                      </Label>
+                      <Col lg="10">
+                        <Input
+                            id="projectnamet"
+                            name="projectnamet"
+                            type="text"
+                            className="form-control"
+                            placeholder="திட்டத்தின் பெயர் உள்ளிடவும்..."
+                        />
+                      </Col>
+                    </FormGroup>
+                    </div>
+                    <div className="mb-5">
+                    <FormGroup className="mb-4" row>
+                      <Label
+                        htmlFor="projectdesc"
+                        className="col-form-label col-lg-2"
+                      >
+                        Project Description (En)
+                      </Label>
+                      <Col lg="10">
+                        <textarea
+                          className="form-control"
+                          id="projectdesc"
+                          rows="3"
+                          placeholder="Enter Project Description..."
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup className="mb-4" row>
+                      <Label
+                          htmlFor="projectdescs"
+                          className="col-form-label col-lg-2"
+                      >
+                        Project Description (Si)
+                      </Label>
+                      <Col lg="10">
                             <textarea
-                              className="form-control"
-                              id="projectdesc"
-                              rows="3"
-                              placeholder="Enter Project Description..."
+                                className="form-control"
+                                id="projectdescs"
+                                rows="3"
+                                placeholder="ව්‍යාපෘතියේ විස්තර ඇතුලත් කරන්න..."
                             />
-                          </Col>
-                        </FormGroup>
-
-                        <FormGroup className="mb-4" row>
-                          <Label className="col-form-label col-lg-2">
-                            Project Date
-                          </Label>
-                          <Col lg="10">
-                            <Row>
-                              <Col md={6} className="pr-0">
-                                <DatePicker
-                                  className="form-control"
-                                  selected={startDate}
-                                  onChange={startDateChange}
+                      </Col>
+                    </FormGroup>
+                    <FormGroup className="mb-4" row>
+                      <Label
+                          htmlFor="projectdesct"
+                          className="col-form-label col-lg-2"
+                      >
+                        Project Description (Ta)
+                      </Label>
+                      <Col lg="10">
+                                <textarea
+                                    className="form-control"
+                                    id="projectdesct"
+                                    rows="3"
+                                    placeholder="திட்ட விவரங்களை உள்ளிடவும்..."
                                 />
-                              </Col>
-                              <Col md={6} className="pl-0">                               
-                                <DatePicker
-                                  className="form-control"
-                                  selected={endDate}
-                                  onChange={endDateChange}
-                                />
-                              </Col>
-                            </Row>
-                          </Col>
-                        </FormGroup>
-
-                        <FormGroup className="mb-4" row>
-                          <label
-                            htmlFor="projectbudget"
-                            className="col-form-label col-lg-2"
-                          >
-                            Budget
-                          </label>
-                          <Col lg="10">
-                            <Input
-                              id="projectbudget"
-                              name="projectbudget"
-                              type="text"
-                              placeholder="Enter Project Budget..."
-                              className="form-control"
-                            />
-                          </Col>
-                        </FormGroup>                     
-                  </Form>
-                  <Row className="mb-4">
-                    <Label className="col-form-label col-lg-2">
-                      Attached Files
+                      </Col>
+                    </FormGroup>
+                  </div>
+                  <div className="mb-5">
+                  <FormGroup className="mb-4" row>
+                    <Label
+                        htmlFor="instituteen"
+                        className="col-form-label col-lg-2"
+                    >
+                      Executing Institute (En)
                     </Label>
                     <Col lg="10">
-                      <Form>
-                        <Dropzone
-                          onDrop={acceptedFiles => {
-                            handleAcceptedFiles(acceptedFiles);
-                          }}
-                        >
-                          {({ getRootProps, getInputProps }) => (
-                            <div className="dropzone">
-                              <div
-                                className="dz-message needsclick"
-                                {...getRootProps()}
-                              >
-                                <input {...getInputProps()} />
-                                <div className="dz-message needsclick">
-                                  <div className="mb-3">
-                                    <i className="display-4 text-muted bx bxs-cloud-upload" />
-                                  </div>
-                                  <h4>Drop files here or click to upload.</h4>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </Dropzone>
-                        <div
-                          className="dropzone-previews mt-3"
-                          id="file-previews"
-                        >
-                          {selectedFiles.map((f, i) => {
-                            return (
-                              <Card
-                                className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
-                                key={i + "-file"}
-                              >
-                                <div className="p-2">
-                                  <Row className="align-items-center">
-                                    <Col className="col-auto">
-                                      <img
-                                        data-dz-thumbnail=""
-                                        height="80"
-                                        className="avatar-sm rounded bg-light"
-                                        alt={f.name}
-                                        src={f.preview}
-                                      />
-                                    </Col>
-                                    <Col>
-                                      <Link
-                                        to="#"
-                                        className="text-muted font-weight-bold"
-                                      >
-                                        {f.name}
-                                      </Link>
-                                      <p className="mb-0">
-                                        <strong>{f.formattedSize}</strong>
-                                      </p>
-                                    </Col>
-                                  </Row>
-                                </div>
-                              </Card>
-                            );
-                          })}
-                        </div>
-                      </Form>
+                      <Input
+                          id="instituteen"
+                          name="instituteen"
+                          type="text"
+                          className="form-control"
+                          placeholder="Executing institute name..."
+                      />
                     </Col>
-                  </Row>
+                  </FormGroup>
+                  <FormGroup className="mb-4" row>
+                    <Label
+                        htmlFor="institutesi"
+                        className="col-form-label col-lg-2"
+                    >
+                      Executing Institute (Si)
+                    </Label>
+                    <Col lg="10">
+                      <Input
+                          id="institutesi"
+                          name="institutesi"
+                          type="text"
+                          className="form-control"
+                          placeholder="ක්‍රියාත්මක කිරීමේ ආයතනය..."
+                      />
+                    </Col>
+                  </FormGroup>
+                  <FormGroup className="mb-4" row>
+                    <Label
+                        htmlFor="instituteta"
+                        className="col-form-label col-lg-2"
+                    >
+                      Executing Institute (Ta)
+                    </Label>
+                    <Col lg="10">
+                      <Input
+                          id="instituteta"
+                          name="instituteta"
+                          type="text"
+                          className="form-control"
+                          placeholder="செயல்படுத்தும் நிறுவனம்..."
+                      />
+                    </Col>
+                  </FormGroup>
+                  </div>
+                  <FormGroup className="mb-4" row>
+                    <Label className="col-form-label col-lg-2">
+                      Project Date (Start & Expected End)
+                    </Label>
+                    <Col lg="10">
+                      <Row>
+                        <Col md={6} className="pr-0">
+                          <DatePicker
+                            className="form-control"
+                            selected={startDate}
+                            onChange={startDateChange}
+                          />
+                        </Col>
+                        <Col md={6} className="pl-0">
+                          <DatePicker
+                            className="form-control"
+                            selected={endDate}
+                            onChange={endDateChange}
+                          />
+                        </Col>
+                      </Row>
+                    </Col>
+                  </FormGroup>
+                  <FormGroup className="mb-4" row>
+                    <label
+                      htmlFor="projectbudget"
+                      className="col-form-label col-lg-2"
+                    >
+                      Budget
+                    </label>
+                    <Col lg="10">
+                      <Input
+                        id="projectbudget"
+                        name="projectbudget"
+                        type="text"
+                        placeholder="Enter Project Budget..."
+                        className="form-control"
+                      />
+                    </Col>
+                  </FormGroup>
+                  </Form>
+
                   <Row className="justify-content-end">
                     <Col lg="10">
                       <Button type="submit" color="primary">

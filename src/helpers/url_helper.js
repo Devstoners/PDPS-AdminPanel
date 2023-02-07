@@ -96,6 +96,18 @@ export const DELETE_PROJECT = "/delete/project";
 //TASKS
 export const GET_TASKS = "/tasks";
 
+//Complain
+export const GET_COMPLAIN = "/complain";
+export const ADD_NEW_COMPLAIN = "/complain";
+export const UPDATE_COMPLAIN = "/complain";
+export const DELETE_COMPLAIN = "/complain";
+
+//NEWS
+export const GET_NEWS = "/news";
+export const ADD_NEW_NEWS = "/news";
+export const UPDATE_NEWS = "/news";
+export const DELETE_NEWS = "/news";
+
 //CONTACTS
 export const GET_USERS = "/users";
 export const GET_USER_PROFILE = "/user";

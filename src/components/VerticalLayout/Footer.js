@@ -10,7 +10,7 @@ const Footer = () => {
             <Col md={6}>{new Date().getFullYear()} © PDPS.</Col>
             <Col md={6}>
               <div className="text-sm-end d-none d-sm-block">
-                Design & Develop by DevStoners
+                Design & Develop by Asanka
               </div>
             </Col>
           </Row>

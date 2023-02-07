@@ -224,7 +224,7 @@ function Party() {
                 <Col xl={8}>
                     <Card>
                         <CardBody>
-                            <CardTitle className="h4">View | Edit | Delete </CardTitle>
+                            <CardTitle className="h4"> Edit | Delete </CardTitle>
                             <div className="table-responsive">
                                 <TableContainer
                                     columns={columns}
