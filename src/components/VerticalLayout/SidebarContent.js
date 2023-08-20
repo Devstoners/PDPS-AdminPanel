@@ -93,6 +93,7 @@ const SidebarContent = props => {
         <div id="sidebar-menu">
           <ul className="metismenu list-unstyled" id="side-menu">
             <li className="menu-title">{props.t("Menu")} </li>
+
             <li>			
 			  <Link to="/dashboard" >
 				<i className="bx bx-home-circle"></i>
@@ -195,7 +196,9 @@ const SidebarContent = props => {
                 <span>{props.t("Backup")}</span>
               </Link>
             </li>
-			
+
+
+
           </ul>
         </div>
       </SimpleBar>

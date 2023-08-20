@@ -10,7 +10,7 @@ import {
   Label,
   Input,
   FormFeedback,
-  Form,
+  Form, CardHeader, CardTitle,
 } from "reactstrap";
 
 // Formik Validation
@@ -32,7 +32,7 @@ import { editProfile, resetProfileFlag } from "../../store/actions";
 const UserProfile = () => {
 
    //meta title
-   document.title="Profile | Skote - React Admin & Dashboard Template";
+   document.title="PDPS";
 
   const dispatch = useDispatch();
 
@@ -88,7 +88,7 @@ const UserProfile = () => {
       <div className="page-content">
         <Container fluid>
           {/* Render Breadcrumb */}
-          <Breadcrumb title="Skote" breadcrumbItem="Profile" />
+          <Breadcrumb title="Settings" breadcrumbItem="Profile" />
 
           <Row>
             <Col lg="12">
@@ -117,11 +117,83 @@ const UserProfile = () => {
               </Card>
             </Col>
           </Row>
+          <Row>
+          <Col xl={6}>
+            <Card>
+              <CardBody>
+                <CardTitle className="mb-4">Password Reset</CardTitle>
+                <Form>
+                  <Row className="mb-4">
+                    <Label
+                        htmlFor="o-password"
+                        className="form-label"
+                    >
+                      Old Password
+                    </Label>
+                    <Col sm={12}>
+                      <Input
+                          type="password"
+                          className="form-control"
+                          id="o-password"
+                          placeholder="Enter Your Existing Password"
+                      />
+                    </Col>
+                  </Row>
+                  <Row className="mb-4">
+                    <Label
+                        htmlFor="n-password"
+                        className="form-label"
+                    >
+                      New Password
+                    </Label>
+                    <Col sm={12}>
+                      <Input
+                          type="password"
+                          className="form-control"
+                          id="n-password"
+                          placeholder="Enter New Password"
+                      />
+                    </Col>
+                  </Row>
+                  <Row className="mb-4">
+                    <Label
+                        htmlFor="cn-password"
+                        className="form-label"
+                    >
+                      Confirm New Password
+                    </Label>
+                    <Col sm={12}>
+                      <Input
+                          type="password"
+                          className="form-control"
+                          id="cn-password"
+                          placeholder="Re-Enter Your New Password"
+                      />
+                    </Col>
+                  </Row>
+                  <Row className="justify-content-end">
+                    <Col sm={12}>
+                      <div className="text-end mt-4">
+                        <Button
+                            type="submit"
+                            color="primary"
+                            className="btn btn-success save-user"
+                        >
+                          Update
+                        </Button>
+                      </div>
+                    </Col>
+                  </Row>
+                </Form>
+              </CardBody>
+            </Card>
+          </Col>
 
-          <h4 className="card-title mb-4">Change User Name</h4>
 
-          <Card>
+            <Col xl={6}>
+            <Card>
             <CardBody>
+              <h4 className="card-title mb-4">Change Display Name</h4>
               <Form
                 className="form-horizontal"
                 onSubmit={(e) => {
@@ -131,12 +203,11 @@ const UserProfile = () => {
                 }}
               >
                 <div className="form-group">
-                  <Label className="form-label">User Name</Label>
                   <Input
                     name="username"
                     // value={name}
                     className="form-control"
-                    placeholder="Enter User Name"
+                    placeholder="Enter Display Name"
                     type="text"
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -150,14 +221,39 @@ const UserProfile = () => {
                   ) : null}
                   <Input name="idx" value={idx} type="hidden" />
                 </div>
-                <div className="text-center mt-4">
-                  <Button type="submit" color="danger">
-                    Update User Name
+                <div className="text-end mt-4">
+                  <Button type="submit" className="btn btn-success save-user">
+                    Update
                   </Button>
                 </div>
               </Form>
             </CardBody>
-          </Card>
+            </Card>
+
+            <Card>
+              <CardBody>
+                <h4 className="card-title mb-4">Change Profile Picture</h4>
+                <Form
+                    className="form-horizontal"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      validation.handleSubmit();
+                      return false;
+                    }}
+                >
+                  <div className="d-flex gap-3">
+                    <Input className="form-control" type="file" id="formFile" />
+                  </div>
+                  <div className="text-end mt-4">
+                    <button type="submit" className="btn btn-success save-user" >
+                      Update
+                    </button>
+                  </div>
+                </Form>
+              </CardBody>
+            </Card>
+            </Col>
+          </Row>
         </Container>
       </div>
     </React.Fragment>

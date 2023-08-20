@@ -12,7 +12,7 @@ import TapVisitors from "./TapVisitors"
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
 
-const index = () => {
+const admin = () => {
   //meta title
   document.title = "Admin | PDPS";
 
@@ -38,4 +38,4 @@ const index = () => {
   )
 }
 
-export default index
+export default admin
