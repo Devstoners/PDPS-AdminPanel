@@ -32,6 +32,13 @@ const Register = props => {
       email: '',
       username: '',
       password: '',
+      password_confirmation:'',
+      is_active:'',
+      type:'',
+      name:'',
+      nic:'',
+      mobileNo:''
+
     },
     validationSchema: Yup.object({
       email: Yup.string().required("Please Enter Your Email"),
@@ -112,6 +119,106 @@ const Register = props => {
                       {registrationError && registrationError ? (
                         <Alert color="danger">{registrationError}</Alert>
                       ) : null}
+
+                      <div className="mb-3">
+                        <Label className="form-label">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          className="form-control"
+                          placeholder="Enter email"
+                          type="email"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.email || ""}
+                          invalid={
+                            validation.touched.email && validation.errors.email ? true : false
+                          }
+                        />
+                        {validation.touched.email && validation.errors.email ? (
+                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
+                        ) : null}
+                      </div>
+
+                      <div className="mb-3">
+                        <Label className="form-label">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          className="form-control"
+                          placeholder="Enter email"
+                          type="email"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.email || ""}
+                          invalid={
+                            validation.touched.email && validation.errors.email ? true : false
+                          }
+                        />
+                        {validation.touched.email && validation.errors.email ? (
+                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
+                        ) : null}
+                      </div>
+
+                      <div className="mb-3">
+                        <Label className="form-label">Email</Label>
+                        <Input
+                          id="password"
+                          name="password"
+                          className="form-control"//test
+                          placeholder="Enter password"
+                          type="password"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.password || ""}
+                          invalid={
+                            validation.touched.email && validation.errors.password ? true : false
+                          }
+                        />
+                        {validation.touched.email && validation.errors.password ? (
+                          <FormFeedback type="invalid">{validation.errors.password}</FormFeedback>
+                        ) : null}
+                      </div>
+
+                      <div className="mb-3">
+                        <Label className="form-label">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          className="form-control"
+                          placeholder="Enter email"
+                          type="email"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.email || ""}
+                          invalid={
+                            validation.touched.email && validation.errors.email ? true : false
+                          }
+                        />
+                        {validation.touched.email && validation.errors.email ? (
+                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
+                        ) : null}
+                      </div>
+
+                      <div className="mb-3">
+                        <Label className="form-label">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          className="form-control"
+                          placeholder="Enter email"
+                          type="email"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.email || ""}
+                          invalid={
+                            validation.touched.email && validation.errors.email ? true : false
+                          }
+                        />
+                        {validation.touched.email && validation.errors.email ? (
+                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
+                        ) : null}
+                      </div>
 
                       <div className="mb-3">
                         <Label className="form-label">Email</Label>
