@@ -27,6 +27,7 @@ import logo from "assets/images/logo.svg";
 //Import config
 import { facebook, google } from "../../config";
 import loginService from "../../services/LoginService";
+import Swal from "sweetalert2";
 
 const Login = props => {
 
@@ -51,9 +52,30 @@ const Login = props => {
     onSubmit: async (values) => {
       console.log(values);
       const data = await loginService.login(values);
-      console.log(data);
-      await localStorage.setItem("auth-token", data.data.token)
-      window.location.href = '/dashboard';
+      console.log(data,'shit');
+      if (data.status === 201) {
+        console.log(data.data.user,'shit1');
+        if (data.data.user.roles[0].name !== "customer") {
+          console.log(data,'shit2');
+          await localStorage.setItem("auth-token", data.data.token)
+          // window.location.href = '/dashboard';
+          history.push("/dashboard")
+        }else{
+          await Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "You have to no permission to login!"
+          })
+        }
+      }else{
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Wrong Username or Password!"
+        })
+      }
+
+
 
     }
   });
