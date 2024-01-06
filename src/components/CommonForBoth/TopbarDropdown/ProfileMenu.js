@@ -11,12 +11,13 @@ import {
 import { withTranslation } from "react-i18next";
 // Redux
 import { connect } from "react-redux";
-import { withRouter, Link } from "react-router-dom";
+import {withRouter, Link, useHistory} from "react-router-dom";
 
 // users
 import user1 from "../../../assets/images/users/avatar-1.jpg";
 
 const ProfileMenu = props => {
+  const history = useHistory();
   // Declare a new state variable, which we'll call "menu"
   const [menu, setMenu] = useState(false);
 
@@ -36,6 +37,16 @@ const ProfileMenu = props => {
       }
     }
   }, [props.success]);
+  function logoutPdpd() {
+
+    if (localStorage.getItem('auth-token')) {
+    //  history.push("/login")
+      localStorage.removeItem('auth-token');
+
+    } else {
+      console.log('No user data found. Already logged out?');
+    }
+  }
 
   return (
     <React.Fragment>
@@ -74,7 +85,7 @@ const ProfileMenu = props => {
             {props.t("Lock screen")}
           </DropdownItem>
           <div className="dropdown-divider" />
-          <Link to="/logout" className="dropdown-item">
+          <Link to="/login" className="dropdown-item" onClick={logoutPdpd}>
             <i className="bx bx-power-off font-size-16 align-middle me-1 text-danger" />
             <span>{props.t("Logout")}</span>
           </Link>
