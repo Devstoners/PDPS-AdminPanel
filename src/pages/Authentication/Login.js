@@ -6,7 +6,7 @@ import { Row, Col, CardBody, Card, Alert, Container, Form, Input, FormFeedback, 
 //redux
 import { useSelector, useDispatch } from "react-redux";
 
-import { withRouter, Link } from "react-router-dom";
+import { withRouter, Link,useHistory } from "react-router-dom";
 
 // Formik validation
 import * as Yup from "yup";
@@ -26,10 +26,12 @@ import logo from "assets/images/logo.svg";
 
 //Import config
 import { facebook, google } from "../../config";
+import loginService from "../../services/LoginService";
 
 const Login = props => {
 
   //meta title
+  const history = useHistory();
   document.title = "Login | Skote - React Admin & Dashboard Template";
 
   const dispatch = useDispatch();
@@ -46,8 +48,13 @@ const Login = props => {
       email: Yup.string().required("Please Enter Your Email"),
       password: Yup.string().required("Please Enter Your Password"),
     }),
-    onSubmit: (values) => {
-      dispatch(loginUser(values, props.history));
+    onSubmit: async (values) => {
+      console.log(values);
+      const data = await loginService.login(values);
+      console.log(data);
+      await localStorage.setItem("auth-token", data.data.token)
+      window.location.href = '/dashboard';
+
     }
   });
 
@@ -56,6 +63,7 @@ const Login = props => {
   }));
 
   const signIn = (res, type) => {
+    console.log('fucku');
     if (type === "google" && res) {
       const postData = {
         name: res.profileObj.name,
@@ -199,65 +207,7 @@ const Login = props => {
                         </button>
                       </div>
 
-                      <div className="mt-4 text-center">
-                        <h5 className="font-size-14 mb-3">Sign in with</h5>
 
-                        <ul className="list-inline">
-                          <li className="list-inline-item">
-                            <FacebookLogin
-                              appId={facebook.APP_ID}
-                              autoLoad={false}
-                              callback={facebookResponse}
-                              render={renderProps => (
-                                <Link
-                                  to="#"
-                                  className="social-list-item bg-primary text-white border-primary"
-                                  onClick={renderProps.onClick}
-                                >
-                                  <i className="mdi mdi-facebook" />
-                                </Link>
-                              )}
-                            />
-                          </li>
-                          {/*<li className="list-inline-item">*/}
-                          {/*  <TwitterLogin*/}
-                          {/*    loginUrl={*/}
-                          {/*      "http://localhost:4000/api/v1/auth/twitter"*/}
-                          {/*    }*/}
-                          {/*    onSuccess={this.twitterResponse}*/}
-                          {/*    onFailure={this.onFailure}*/}
-                          {/*    requestTokenUrl={*/}
-                          {/*      "http://localhost:4000/api/v1/auth/twitter/revers"*/}
-                          {/*    }*/}
-                          {/*    showIcon={false}*/}
-                          {/*    tag={"div"}*/}
-                          {/*  >*/}
-                          {/*    <a*/}
-                          {/*      href=""*/}
-                          {/*      className="social-list-item bg-info text-white border-info"*/}
-                          {/*    >*/}
-                          {/*      <i className="mdi mdi-twitter"/>*/}
-                          {/*    </a>*/}
-                          {/*  </TwitterLogin>*/}
-                          {/*</li>*/}
-                          <li className="list-inline-item">
-                            <GoogleLogin
-                              clientId={google.CLIENT_ID}
-                              render={renderProps => (
-                                <Link
-                                  to="#"
-                                  className="social-list-item bg-danger text-white border-danger"
-                                  onClick={renderProps.onClick}
-                                >
-                                  <i className="mdi mdi-google" />
-                                </Link>
-                              )}
-                              onSuccess={googleResponse}
-                              onFailure={() => { }}
-                            />
-                          </li>
-                        </ul>
-                      </div>
 
                       <div className="mt-4 text-center">
                         <Link to="/forgot-password" className="text-muted">
