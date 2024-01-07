@@ -38,6 +38,7 @@ import UserProfile from "../pages/Authentication/user-profile"
 
 // Authentication related pages
 import Login from "../pages/Authentication/Login"
+import Register from "../pages/Authentication/Register"
 
 const authProtectedRoutes = [
  //Dashboard
@@ -80,6 +81,7 @@ const authProtectedRoutes = [
 
 const publicRoutes = [
  { path: "/login", component: Login },
+ { path: "/register", component: Register },
 ]
 
 export { authProtectedRoutes, publicRoutes }

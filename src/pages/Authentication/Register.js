@@ -1,65 +1,58 @@
-import React, { useEffect } from "react";
-import { Row, Col, CardBody, Card, Alert, Container, Input, Label, Form, FormFeedback } from "reactstrap";
+import React, { useEffect } from "react"
+import { Row, Col, CardBody, Card, Alert, Container, Input, Label, Form, FormFeedback } from "reactstrap"
 
 // Formik Validation
-import * as Yup from "yup";
-import { useFormik } from "formik";
+import * as Yup from "yup"
+import { useFormik } from "formik"
 
 // action
-import { registerUser, apiError } from "../../store/actions";
+import { registerUser, apiError } from "../../store/actions"
 
 //redux
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux"
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
 
 // import images
-import profileImg from "../../assets/images/profile-img.png";
-import logoImg from "../../assets/images/logo.svg";
+import logoImg from "../../assets/images/logo.svg"
+
 
 const Register = props => {
 
   //meta title
-  document.title = "Register | Skote - React Admin & Dashboard Template";
+  document.title = "PDPS"
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
 
     initialValues: {
-      email: '',
-      username: '',
-      password: '',
-      password_confirmation:'',
-      is_active:'',
-      type:'',
-      name:'',
-      nic:'',
-      mobileNo:''
-
+      email: "",
+      username: "",
+      password: ""
     },
     validationSchema: Yup.object({
       email: Yup.string().required("Please Enter Your Email"),
       username: Yup.string().required("Please Enter Your Username"),
-      password: Yup.string().required("Please Enter Your Password"),
+      password: Yup.string().required("Please Enter Your Password")
     }),
     onSubmit: (values) => {
-      dispatch(registerUser(values));
+      dispatch(registerUser(values))
     }
-  });
+  })
 
   const { user, registrationError, loading } = useSelector(state => ({
     user: state.Account.user,
     registrationError: state.Account.registrationError,
-    loading: state.Account.loading,
-  }));
-  console.log("user", user);
+    loading: state.Account.loading
+  }))
+  console.log("user", user)
 
   useEffect(() => {
-    dispatch(apiError(""));
-  }, []);
+    dispatch(apiError(""))
+  }, [])
 
   return (
     <React.Fragment>
@@ -77,12 +70,8 @@ const Register = props => {
                   <Row>
                     <Col className="col-7">
                       <div className="text-primary p-4">
-                        <h5 className="text-primary">Free Register</h5>
-                        <p>Get your free Skote account now.</p>
+                        <h4 className="text-primary"> Register</h4>
                       </div>
-                    </Col>
-                    <Col className="col-5 align-self-end">
-                      <img src={profileImg} alt="" className="img-fluid" />
                     </Col>
                   </Row>
                 </div>
@@ -94,7 +83,7 @@ const Register = props => {
                           <img
                             src={logoImg}
                             alt=""
-                            className="rounded-circle"
+                            className="img-thumbnail rounded-circle"
                             height="34"
                           />
                         </span>
@@ -105,9 +94,9 @@ const Register = props => {
                     <Form
                       className="form-horizontal"
                       onSubmit={(e) => {
-                        e.preventDefault();
-                        validation.handleSubmit();
-                        return false;
+                        e.preventDefault()
+                        validation.handleSubmit()
+                        return false
                       }}
                     >
                       {user && user ? (
@@ -120,125 +109,6 @@ const Register = props => {
                         <Alert color="danger">{registrationError}</Alert>
                       ) : null}
 
-                      <div className="mb-3">
-                        <Label className="form-label">Email</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          className="form-control"
-                          placeholder="Enter email"
-                          type="email"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.email || ""}
-                          invalid={
-                            validation.touched.email && validation.errors.email ? true : false
-                          }
-                        />
-                        {validation.touched.email && validation.errors.email ? (
-                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
-                        ) : null}
-                      </div>
-
-                      <div className="mb-3">
-                        <Label className="form-label">Email</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          className="form-control"
-                          placeholder="Enter email"
-                          type="email"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.email || ""}
-                          invalid={
-                            validation.touched.email && validation.errors.email ? true : false
-                          }
-                        />
-                        {validation.touched.email && validation.errors.email ? (
-                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
-                        ) : null}
-                      </div>
-
-                      <div className="mb-3">
-                        <Label className="form-label">Email</Label>
-                        <Input
-                          id="password"
-                          name="password"
-                          className="form-control"//test
-                          placeholder="Enter password"
-                          type="password"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.password || ""}
-                          invalid={
-                            validation.touched.email && validation.errors.password ? true : false
-                          }
-                        />
-                        {validation.touched.email && validation.errors.password ? (
-                          <FormFeedback type="invalid">{validation.errors.password}</FormFeedback>
-                        ) : null}
-                      </div>
-
-                      <div className="mb-3">
-                        <Label className="form-label">Email</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          className="form-control"
-                          placeholder="Enter email"
-                          type="email"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.email || ""}
-                          invalid={
-                            validation.touched.email && validation.errors.email ? true : false
-                          }
-                        />
-                        {validation.touched.email && validation.errors.email ? (
-                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
-                        ) : null}
-                      </div>
-
-                      <div className="mb-3">
-                        <Label className="form-label">Email</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          className="form-control"
-                          placeholder="Enter email"
-                          type="email"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.email || ""}
-                          invalid={
-                            validation.touched.email && validation.errors.email ? true : false
-                          }
-                        />
-                        {validation.touched.email && validation.errors.email ? (
-                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
-                        ) : null}
-                      </div>
-
-                      <div className="mb-3">
-                        <Label className="form-label">Email</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          className="form-control"
-                          placeholder="Enter email"
-                          type="email"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.email || ""}
-                          invalid={
-                            validation.touched.email && validation.errors.email ? true : false
-                          }
-                        />
-                        {validation.touched.email && validation.errors.email ? (
-                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
-                        ) : null}
-                      </div>
 
                       <div className="mb-3">
                         <Label className="form-label">Username</Label>
@@ -275,6 +145,23 @@ const Register = props => {
                         ) : null}
                       </div>
 
+                      <div className="mb-3">
+                        <Label className="form-label">Confirm Password</Label>
+                        <Input
+                          name="cpassword"
+                          type="cpassword"
+                          placeholder="Enter Password Confirmation"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.cpassword || ""}
+                          invalid={
+                            validation.touched.cpassword && validation.errors.cpassword ? true : false
+                          }
+                        />
+                        {validation.touched.cpassword && validation.errors.cpassword ? (
+                          <FormFeedback type="invalid">{validation.errors.cpassword}</FormFeedback>
+                        ) : null}
+                      </div>
                       <div className="mt-4">
                         <button
                           className="btn btn-primary btn-block "
@@ -282,15 +169,6 @@ const Register = props => {
                         >
                           Register
                         </button>
-                      </div>
-
-                      <div className="mt-4 text-center">
-                        <p className="mb-0">
-                          By registering you agree to the Skote{" "}
-                          <Link to="#" className="text-primary">
-                            Terms of Use
-                          </Link>
-                        </p>
                       </div>
                     </Form>
                   </div>
@@ -305,8 +183,7 @@ const Register = props => {
                   </Link>{" "}
                 </p>
                 <p>
-                  © {new Date().getFullYear()} Skote. Crafted with{" "}
-                  <i className="mdi mdi-heart text-danger" /> by Themesbrand
+                  © {new Date().getFullYear()} PDPS
                 </p>
               </div>
             </Col>
@@ -314,7 +191,7 @@ const Register = props => {
         </Container>
       </div>
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register
