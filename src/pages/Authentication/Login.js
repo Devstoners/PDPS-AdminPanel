@@ -33,7 +33,7 @@ const Login = props => {
 
   //meta title
   const history = useHistory();
-  document.title = "Login | Skote - React Admin & Dashboard Template";
+  document.title = "Login | PDPS";
 
   const dispatch = useDispatch();
 
@@ -50,14 +50,15 @@ const Login = props => {
       password: Yup.string().required("Please Enter Your Password"),
     }),
     onSubmit: async (values) => {
-      console.log(values);
+     // console.log(values);
       const data = await loginService.login(values);
-      console.log(data,'shit');
+     // console.log(data,'error New New');
       if (data.status === 201) {
-        console.log(data.data.user,'shit1');
+       // console.log(data.data.user,'shit1');
         if (data.data.user.roles[0].name !== "customer") {
-          console.log(data,'shit2');
+          //console.log(data,'shit2');
           await localStorage.setItem("auth-token", data.data.token)
+          await localStorage.setItem("user-role", data.data.user.roles[0].name)
           // window.location.href = '/dashboard';
           history.push("/dashboard")
         }else{
