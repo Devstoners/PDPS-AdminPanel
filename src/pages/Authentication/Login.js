@@ -40,7 +40,7 @@ const Login = props => {
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
-
+//
     initialValues: {
       email: "admin@gmail.com" || '',
       password: "111" || '',
@@ -60,6 +60,11 @@ const Login = props => {
           await localStorage.setItem("auth-token", data.data.token)
           await localStorage.setItem("user-role", data.data.user.roles[0].name)
           // window.location.href = '/dashboard';
+          await Swal.fire(
+              "Login Successfully!",
+              "",
+              "success"
+          )
           history.push("/dashboard")
         }else{
           await Swal.fire({
