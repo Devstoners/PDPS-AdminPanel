@@ -59,6 +59,11 @@ const Login = props => {
           console.log(data,'shit2');
           await localStorage.setItem("auth-token", data.data.token)
           // window.location.href = '/dashboard';
+          await Swal.fire(
+              "Login Successfully!",
+              "",
+              "success"
+          )
           history.push("/dashboard")
         }else{
           await Swal.fire({

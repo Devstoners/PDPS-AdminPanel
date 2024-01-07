@@ -20,9 +20,13 @@ import "react-datepicker/dist/react-datepicker.css"
 import Breadcrumbs from "../../components/Common/Breadcrumb"
 import {useFormik} from "formik";
 import * as Yup from "yup";
+import loginService from "../../services/LoginService";
+import newsService from "../../services/NewsService";
+import Swal from "sweetalert2";
+import {useHistory} from "react-router-dom";
 
 const NewsCreate = () => {
-
+  const history = useHistory();
   //meta title
   document.title="Admin | PDPS";
   const [news, setNews] = useState();
@@ -30,6 +34,15 @@ const NewsCreate = () => {
   const [startDate, setstartDate] = useState(new Date())
   const [endDate, setendDate] = useState(new Date())
   const [inputFields, setinputFields] = useState(inpRow)
+
+  const [sinhala, setSinhala] = useState();
+  const [english, setEnglish] = useState();
+  const [tamil, setTamil] = useState();
+  const [startDateSelect, setStartDateSelect] = useState(new Date())
+  const [endDateSelect, setEndDateSelect] = useState(new Date())
+  const [isChecked, setChecked] = useState(false);
+  const [isPriority, setIsPriority] = useState(false);
+
 
   const startDateChange = date => {
     setstartDate(date)
@@ -66,7 +79,7 @@ const NewsCreate = () => {
     }),
     onSubmit: (values) => {
       console.log("values", values);
-      validation.resetForm();
+      //validation.resetForm();
     }
   });
 
@@ -75,7 +88,58 @@ const NewsCreate = () => {
     topics: null,
     topict: null,
   });
+  const handleSinhala = (event) => {
+    setSinhala(event.target.value);
+  };
+  const handleTamil = (event) =>{
+    setTamil(event.target.value);
+  }
 
+  const handleEnglish = (event) =>{
+    console.log(event.target.value)
+    setEnglish(event.target.value);
+  }
+
+  const handleStartDateChange = (event) =>{
+
+      setStartDateSelect(event);
+  }
+
+  const handleEndDateChange = (event) =>{
+    setEndDateSelect(event);
+  }
+
+  const handleCheckboxChange = () => {
+    setChecked(!isChecked);
+  };
+
+  const handleCheckboxChangePiro = () => {
+    setIsPriority(!isPriority);
+  };
+
+  const addNewNews = async () => {
+    const addNews = {
+      sinhala: sinhala,
+      english: english,
+      tamil: tamil,
+      startDateSelect: startDateSelect,
+      endDateSelect: endDateSelect,
+      isChecked: isChecked,
+      isPriority: isPriority,
+
+    }
+    console.log(addNews);
+    const data = await newsService.addNews(addNews);
+    console.log(data);
+    if (data.status === 201) {
+      await Swal.fire(
+          "Created Successfully!",
+          "",
+          "success"
+      )
+      history.push("/news")
+    }
+  };
   return (
     <>
       <div className="page-content">
@@ -104,7 +168,12 @@ const NewsCreate = () => {
                               type="textarea"
                               className="form-control"
                               placeholder="Enter News..."
-                              onChange={validation.handleChange}
+                              onChange={(event) => {
+                                validation.handleChange(event);
+                                // Your additional onChange logic here
+                                // For example, you can call another function or perform some specific actions
+                                handleEnglish(event);
+                              }}
                               onBlur={validation.handleBlur}
                               value={validation.values.topice || ""}
                               invalid={
@@ -130,7 +199,12 @@ const NewsCreate = () => {
                                 type="textarea"
                                 className="form-control"
                                 placeholder="පුවත ඇතුලත් කරන්න..."
-                                onChange={validation.handleChange}
+                                onChange={(event) => {
+                                  validation.handleChange(event);
+                                  // Your additional onChange logic here
+                                  // For example, you can call another function or perform some specific actions
+                                  handleSinhala(event);
+                                }}
                                 onBlur={validation.handleBlur}
                                 value={validation.values.topics || ""}
                                 invalid={
@@ -156,7 +230,12 @@ const NewsCreate = () => {
                                 type="textarea"
                                 className="form-control"
                                 placeholder="செய்திகளை உள்ளிடவும்..."
-                                onChange={validation.handleChange}
+                                onChange={(event) => {
+                                  validation.handleChange(event);
+                                  // Your additional onChange logic here
+                                  // For example, you can call another function or perform some specific actions
+                                  handleTamil(event);
+                                }}
                                 onBlur={validation.handleBlur}
                                 value={validation.values.topict || ""}
                                 invalid={
@@ -170,6 +249,54 @@ const NewsCreate = () => {
                         </FormGroup>
 
                         <FormGroup className="mb-4" row>
+                          <Label htmlFor="customControlInline" className="col-form-label col-lg-2">
+                            Visibility
+                          </Label>
+                          <Col lg="10">
+                            <div className="form-check">
+                              <Input
+                                  type="checkbox"
+                                  className="form-check-input"
+                                  id="customControlInline"
+                                  onChange={(event) => {
+
+                                    // Your additional onChange logic here
+                                    // For example, you can call another function or perform some specific actions
+                                    handleCheckboxChange(event);
+                                  }}
+                              />
+                              {/*<Label*/}
+                              {/*    className="form-check-label ml-2"*/}
+                              {/*    htmlFor="customControlInline"*/}
+                              {/*>*/}
+                              {/*  Remember me*/}
+                              {/*</Label>*/}
+                            </div>
+                          </Col>
+                        </FormGroup>
+
+                        <FormGroup className="mb-4" row>
+                          <Label htmlFor="customControlInline" className="col-form-label col-lg-2">
+                            Priority
+                          </Label>
+                          <Col lg="10">
+                            <div className="form-check">
+                              <Input
+                                  type="checkbox"
+                                  className="form-check-input"
+                                  id="customControlInline"
+                                  onChange={(event) => {
+
+                                    // Your additional onChange logic here
+                                    // For example, you can call another function or perform some specific actions
+                                    handleCheckboxChangePiro(event);
+                                  }}
+                              />
+                            </div>
+                          </Col>
+                        </FormGroup>
+
+                        <FormGroup className="mb-4" row>
                           <Label className="col-form-label col-lg-2">
                             Display Duration
                           </Label>
@@ -179,14 +306,26 @@ const NewsCreate = () => {
                                 <DatePicker
                                   className="form-control"
                                   selected={startDate}
-                                  onChange={startDateChange}
+
+                                  onChange={(event) => {
+
+                                    // Your additional onChange logic here
+                                    // For example, you can call another function or perform some specific actions
+                                    handleStartDateChange(event);
+                                  }}
                                 />
                               </Col>
                               <Col md={6} className="pl-0">
                                 <DatePicker
                                   className="form-control"
                                   selected={endDate}
-                                  onChange={endDateChange}
+
+                                  onChange={(event) => {
+
+                                    // Your additional onChange logic here
+                                    // For example, you can call another function or perform some specific actions
+                                    handleEndDateChange(event);
+                                  }}
                                 />
                               </Col>
                             </Row>
@@ -199,9 +338,13 @@ const NewsCreate = () => {
                   </form>
                   <Row className="justify-content-end">
                     <Col lg="10">
-                      <Button type="submit" color="primary">
-                        Create News
-                      </Button>
+                      <button
+                          type="button"
+                          className="btn btn-primary btn-block"
+                          onClick={addNewNews}
+                      >
+                        Submit News
+                      </button>
                     </Col>
                   </Row>
                 </CardBody>
