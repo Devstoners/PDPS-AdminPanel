@@ -22,7 +22,7 @@ import { loginUser, socialLogin } from "../../store/actions";
 
 // import images
 import profile from "assets/images/profile-img.png";
-import logo from "assets/images/logo.svg";
+import logo from "assets/images/pdps-logo.png";
 
 //Import config
 import { facebook, google } from "../../config";
@@ -42,8 +42,8 @@ const Login = props => {
     enableReinitialize: true,
 
     initialValues: {
-      email: "admin@themesbrand.com" || '',
-      password: "123456" || '',
+      email: "admin@gmail.com" || '',
+      password: "111" || '',
     },
     validationSchema: Yup.object({
       email: Yup.string().required("Please Enter Your Email"),
@@ -135,27 +135,25 @@ const Login = props => {
                   <Row>
                     <Col xs={7}>
                       <div className="text-primary p-4">
-                        <h5 className="text-primary">Welcome Back !</h5>
-                        <p>Sign in to continue to Skote.</p>
+                        <h4 className="text-primary">Sign In </h4>
+
                       </div>
                     </Col>
-                    <Col className="col-5 align-self-end">
-                      <img src={profile} alt="" className="img-fluid" />
-                    </Col>
+
                   </Row>
                 </div>
                 <CardBody className="pt-0">
                   <div>
                     <Link to="/" className="auth-logo-light">
                       <div className="avatar-md profile-user-wid mb-4">
-                        <span className="avatar-title rounded-circle bg-light">
+                      <span className="avatar-title rounded-circle bg-light">
                           <img
                             src={logo}
                             alt=""
-                            className="rounded-circle"
+                            className="img-thumbnail rounded-circle"
                             height="34"
                           />
-                        </span>
+                       </span>
                       </div>
                     </Link>
                   </div>
@@ -251,8 +249,7 @@ const Login = props => {
                   </Link>{" "}
                 </p>
                 <p>
-                  © {new Date().getFullYear()} Skote. Crafted with{" "}
-                  <i className="mdi mdi-heart text-danger" /> by Themesbrand
+                  © {new Date().getFullYear()} PDPS.
                 </p>
               </div>
             </Col>
