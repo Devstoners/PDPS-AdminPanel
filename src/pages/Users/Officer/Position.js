@@ -24,6 +24,9 @@ import {
 
 import {useFormik} from "formik";
 import * as Yup from "yup";
+import loginService from "../../../services/LoginService"
+import Swal from "sweetalert2"
+import OfficerService from "../../../services/OfficerService"
 
 function Position() {
 
@@ -34,32 +37,47 @@ function Position() {
         enableReinitialize: true,
 
         initialValues: {
-            posname: (position && position.posname) || "",
+            position: (position && position.position) || "",
         },
         validationSchema: Yup.object({
-            posname: Yup.string().required("Please Enter Position Name"),
+            position: Yup.string().required("Please Enter Position Name"),
         }),
-        onSubmit: (values) => {
-            console.log("values", values);
-            validation.resetForm();
+      onSubmit: async (values) => {
+        const data = await OfficerService.position(values);
+
+        if (data.status === 201) {
+          await Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Officer Position added successfully"
+          })
+        } else {
+          await Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: data.error || "Something went wrong!"
+          });
+          //dispatch(apiError(data.error || "Something went wrong!"));
+        }
+
         }
     });
 
     const [formValidation, setValidation] = useState({
         posid: null,
-        posname: null,
+        position: null,
     });
 
     function handleSubmit(e) {
         e.preventDefault();
         const modifiedV = { ...formValidation };
-        var posname = document.getElementById("posname").value;
+        var position = document.getElementById("position").value;
 
 
-        if (posname === "") {
-            modifiedV["posname"] = false;
+        if (position === "") {
+            modifiedV["position"] = false;
         } else {
-            modifiedV["posname"] = true;
+            modifiedV["position"] = true;
         }
         setValidation(modifiedV);
     }
@@ -177,39 +195,26 @@ function Position() {
                                 validation.handleSubmit();
                                 return false;
                             }}>
-                                {/*
+
                                 <div className="mb-3">
-                                    <Label htmlFor="posid" className="col-form-label col-lg-2">
-                                        Position ID
-                                    </Label>
-                                    <Input
-                                        id="posid"
-                                        name="posid"
-                                        type="number"
-                                        className="form-control"
-                                        placeholder="Enter Position ID..."
-                                    />
-                                </div>
-                                */}
-                                <div className="mb-3">
-                                    <Label htmlFor="posname" className="col-form-label col-lg-4">
+                                    <Label htmlFor="position" className="col-form-label col-lg-4">
                                         Position Name
                                     </Label>
                                     <Input
-                                        id="posname"
-                                        name="posname"
+                                        id="position"
+                                        name="position"
                                         type="text"
                                         className="form-control"
                                         placeholder="Enter Position ..."
                                         onChange={validation.handleChange}
                                         onBlur={validation.handleBlur}
-                                        value={validation.values.posname || ""}
+                                        value={validation.values.position || ""}
                                         invalid={
-                                            validation.touched.posname && validation.errors.posname ? true : false
+                                            validation.touched.position && validation.errors.position ? true : false
                                         }
                                     />
-                                    {validation.touched.posname && validation.errors.posname ? (
-                                        <FormFeedback type="invalid">{validation.errors.posname}</FormFeedback>
+                                    {validation.touched.position && validation.errors.position ? (
+                                        <FormFeedback type="invalid">{validation.errors.position}</FormFeedback>
                                     ) : null}
                                 </div>
                                 <div>

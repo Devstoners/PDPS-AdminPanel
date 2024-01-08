@@ -1,6 +1,8 @@
 import React, { useEffect } from "react"
 import { Row, Col, CardBody, Card, Alert, Container, Input, Label, Form, FormFeedback } from "reactstrap"
 
+import { withRouter, Link,useHistory } from "react-router-dom";
+
 // Formik Validation
 import * as Yup from "yup"
 import { useFormik } from "formik"
@@ -10,18 +12,18 @@ import { registerUser, apiError } from "../../store/actions"
 
 //redux
 import { useSelector, useDispatch } from "react-redux"
-
-import { Link } from "react-router-dom"
-
+import RegisterService from "../../services/RegisterService"
+import Swal from "sweetalert2";
 // import images
 import logoImg from "../../assets/images/logo.svg"
+import loginService from "../../services/LoginService"
 
 
 const Register = props => {
 
   //meta title
   document.title = "PDPS"
-
+  const history = useHistory();
   const dispatch = useDispatch()
 
   const validation = useFormik({
@@ -29,17 +31,56 @@ const Register = props => {
     enableReinitialize: true,
 
     initialValues: {
-      email: "",
       username: "",
-      password: ""
+      password: "",
+      cpassword:'',
     },
     validationSchema: Yup.object({
-      email: Yup.string().required("Please Enter Your Email"),
+
       username: Yup.string().required("Please Enter Your Username"),
-      password: Yup.string().required("Please Enter Your Password")
+
+      password: Yup.string().required("Password is required"),
+      cpassword: Yup.string().when("password", {
+        is: val => (val && val.length > 0 ? true : false),
+        then: Yup.string().oneOf(
+          [Yup.ref("password")],
+          "Password and Confirm password need to be the same"
+        ),
+      }),
     }),
-    onSubmit: (values) => {
-      dispatch(registerUser(values))
+
+    onSubmit: async (values) => {
+      console.log(values);
+      try {
+        const data = await RegisterService.register(values);
+
+        if (data.status === 201) {
+
+          await Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "You have successfully activated the account. Please log in.!"
+          })
+          history.push("/login")
+
+
+        } else {
+          await Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: data.error || "Something went wrong!"
+          });
+          dispatch(apiError(data.error || "Something went wrong!"));
+        }
+      }catch (error) {
+        console.error("Error during registration:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!"
+        });
+        dispatch(apiError("Somethingkjhhiu went wrong!"));
+      }
     }
   })
 
@@ -48,7 +89,7 @@ const Register = props => {
     registrationError: state.Account.registrationError,
     loading: state.Account.loading
   }))
-  console.log("user", user)
+  //console.log("user", user)
 
   useEffect(() => {
     dispatch(apiError(""))
@@ -99,15 +140,15 @@ const Register = props => {
                         return false
                       }}
                     >
-                      {user && user ? (
-                        <Alert color="success">
-                          Register User Successfully
-                        </Alert>
-                      ) : null}
+                      {/*{user && user ? (*/}
+                      {/*  <Alert color="success">*/}
+                      {/*    Register User Successfully*/}
+                      {/*  </Alert>*/}
+                      {/*) : null}*/}
 
-                      {registrationError && registrationError ? (
-                        <Alert color="danger">{registrationError}</Alert>
-                      ) : null}
+                      {/*{registrationError && registrationError ? (*/}
+                      {/*  <Alert color="danger">{registrationError}</Alert>*/}
+                      {/*) : null}*/}
 
 
                       <div className="mb-3">
@@ -149,7 +190,7 @@ const Register = props => {
                         <Label className="form-label">Confirm Password</Label>
                         <Input
                           name="cpassword"
-                          type="cpassword"
+                          type="password"
                           placeholder="Enter Password Confirmation"
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}

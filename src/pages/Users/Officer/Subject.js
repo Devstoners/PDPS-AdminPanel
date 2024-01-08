@@ -23,36 +23,53 @@ import {
 
 import {useFormik} from "formik";
 import * as Yup from "yup";
+import OfficerService from "../../../services/OfficerService"
+import Swal from "sweetalert2"
 
 function Subject() {
 
-    const [officer, setOfficer] = useState();
-    // Form validation
-    const validation = useFormik({
-        // enableReinitialize : use this flag when initial values needs to be changed
-        enableReinitialize: true,
+  const [subject, setSubject] = useState();
+  // Form validation
+  const validation = useFormik({
+    // enableReinitialize : use this flag when initial values needs to be changed
+    enableReinitialize: true,
 
-        initialValues: {
-            subname: (officer && officer.subname) || "",
-        },
-        validationSchema: Yup.object({
-            subname: Yup.string().required("Please Enter Subject Name"),
-        }),
-        onSubmit: (values) => {
-            console.log("values", values);
-            validation.resetForm();
-        }
-    });
+    initialValues: {
+      subject: (subject && subject.subject) || "",
+    },
+    validationSchema: Yup.object({
+      subject: Yup.string().required("Please Enter Subject Name"),
+    }),
+    onSubmit: async (values) => {
+      const data = await OfficerService.subject(values);
+      //console.log("Inside Components")
+      if (data.status === 201) {
+        await Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Officer Subject added successfully"
+        })
+      } else {
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error || "Something went wrong!"
+        });
+        //dispatch(apiError(data.error || "Something went wrong!"));
+      }
+
+    }
+  });
 
     const [formValidation, setValidation] = useState({
         subid: null,
-        subname: null,
+        subject: null,
     });
 
     function handleSubmit(e) {
         e.preventDefault();
         const modifiedV = { ...formValidation };
-        var subname = document.getElementById("subname").value;
+        var subname = document.getElementById("subject").value;
 
 
         if (subname === "") {
@@ -177,39 +194,26 @@ function Subject() {
                                 validation.handleSubmit();
                                 return false;
                             }}>
-                                {/*
+
                                 <div className="mb-3">
-                                    <Label htmlFor="posid" className="col-form-label col-lg-2">
-                                        Officer ID
-                                    </Label>
-                                    <Input
-                                        id="posid"
-                                        name="posid"
-                                        type="number"
-                                        className="form-control"
-                                        placeholder="Enter Officer ID..."
-                                    />
-                                </div>
-                                */}
-                                <div className="mb-3">
-                                    <Label htmlFor="subname" className="col-form-label col-lg-4">
+                                    <Label htmlFor="subject" className="col-form-label col-lg-4">
                                         Subject Name
                                     </Label>
                                     <Input
-                                        id="subname"
-                                        name="subname"
+                                        id="subject"
+                                        name="subject"
                                         type="text"
                                         className="form-control"
                                         placeholder="Enter Officer ..."
                                         onChange={validation.handleChange}
                                         onBlur={validation.handleBlur}
-                                        value={validation.values.subname || ""}
+                                        value={validation.values.subject || ""}
                                         invalid={
-                                            validation.touched.subname && validation.errors.subname ? true : false
+                                            validation.touched.subject && validation.errors.subject ? true : false
                                         }
                                     />
-                                    {validation.touched.subname && validation.errors.subname ? (
-                                        <FormFeedback type="invalid">{validation.errors.subname}</FormFeedback>
+                                    {validation.touched.subject && validation.errors.subject ? (
+                                        <FormFeedback type="invalid">{validation.errors.subject}</FormFeedback>
                                     ) : null}
                                 </div>
                                 <div>
