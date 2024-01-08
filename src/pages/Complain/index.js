@@ -42,6 +42,7 @@ import { useSelector, useDispatch } from "react-redux";
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import ComplainDetailsModal from "./ComplainDetailsModal";
+import newsService from "../../services/NewsService";
 
 const Complain = props => {
 
@@ -53,6 +54,32 @@ const Complain = props => {
     const [modal1, setModal1] = useState(false);
     const [startDate, setstartDate] = useState(new Date())
     const [endDate, setendDate] = useState(new Date())
+    const [news, setNews] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Ensure that getAllNews is the correct method in your newsService
+                const fetchedData = await newsService.getAllcomplain();
+                console.log(fetchedData.data)
+                const mappedData = fetchedData.data.map(item => ({
+                    id: item.id,
+                    topice: item.topic, // Add a check for existence
+                    cdate: item.complain_date,
+                    status: item.status
+                    ,
+
+                }));
+                console.log(mappedData);
+                setNews(mappedData);
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const startDateChange = date => {
         setstartDate(date)
     }
@@ -332,7 +359,7 @@ const Complain = props => {
                                     {/*-----------------User List Table Start------------------*/}
                                     <TableContainer
                                         columns={columns}
-                                        data={data}
+                                        data={news}
                                         isGlobalFilter={true}
                                         handleComplainClick={handleComplainClicks}
                                         customPageSize={10}

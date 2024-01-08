@@ -39,6 +39,8 @@ import { isEmpty } from "lodash";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
+import newsService from "../../../services/NewsService";
+import officerService from "../../../services/OfficerService";
 
 const Officer = props => {
 
@@ -47,7 +49,31 @@ const Officer = props => {
 
   const dispatch = useDispatch();
   const [contact, setContact] = useState();
-  
+  const [news, setNews] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Ensure that getAllNews is the correct method in your newsService
+        const fetchedData = await officerService.getOffers();
+        console.log(fetchedData.data)
+        const mappedData = fetchedData.data.map(item => ({
+          subid: item.id,
+          email: item.email,
+          name: item.full_name,
+          position: item.officer_positions_id,
+          registered: item.is_registered,
+        }));
+        console.log(mappedData);
+        setNews(mappedData);
+      } catch (error) {
+        console.error('Error fetching news:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 {/* ----------------- Validation ----------------- */}
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -331,7 +357,7 @@ const Officer = props => {
 {/*-----------------User List Table Start------------------*/}				
                   <TableContainer
                     columns={columns}
-                    data={users}
+                    data={news}
                     isGlobalFilter={true}
                     isAddUserList={true}
                     handleUserClick={handleUserClicks}

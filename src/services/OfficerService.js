@@ -15,6 +15,24 @@ const position = async (data) => {
   return some
 }
 
+const getOffers = async () => {
+    let responseData
+    await localStorage.getItem("auth-token")
+    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
+        await axios
+            .get("http://127.0.0.1:8000/api/officer", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+                },
+            })
+            .then(resp => {
+                console.log(resp, "response")
+                responseData = resp
+            })
+    })
+    return responseData
+}
+
 const subject = async (data) => {
   //console.log("test4")
   let some
@@ -34,6 +52,7 @@ const OfficerService = {
   subject,
   position,
   getSanctum,
+    getOffers
 }
 
 export default OfficerService

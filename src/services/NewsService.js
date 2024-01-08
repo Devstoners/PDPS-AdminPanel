@@ -34,6 +34,59 @@ const getAllNews = async () => {
     })
     return responseData
 }
+
+const getPosition = async () => {
+    let responseData
+    await localStorage.getItem("auth-token")
+    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
+        await axios
+            .get("http://127.0.0.1:8000/api/addPosition", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+                },
+            })
+            .then(resp => {
+                console.log(resp, "response")
+                responseData = resp
+            })
+    })
+    return responseData
+}
+
+const getSubject = async () => {
+    let responseData
+    await localStorage.getItem("auth-token")
+    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
+        await axios
+            .get("http://127.0.0.1:8000/api/addSubject", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+                },
+            })
+            .then(resp => {
+                console.log(resp, "response2")
+                responseData = resp
+            })
+    })
+    return responseData
+}
+const getAllcomplain = async () => {
+    let responseData
+    await localStorage.getItem("auth-token")
+    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
+        await axios
+            .get("http://127.0.0.1:8000/api/addComplain", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+                },
+            })
+            .then(resp => {
+                console.log(resp, "response")
+                responseData = resp
+            })
+    })
+    return responseData
+}
 const newsCount = async () => {
     let responseData
     await localStorage.getItem("auth-token")
@@ -93,6 +146,10 @@ const NewsService = {
     getAllNews,
     newsCount,
     getCount,
+    getAllcomplain,
+    getPosition,
+    getSubject
+
 }
 
 export default NewsService

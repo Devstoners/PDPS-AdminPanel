@@ -25,10 +25,35 @@ import {useFormik} from "formik";
 import * as Yup from "yup";
 import OfficerService from "../../../services/OfficerService"
 import Swal from "sweetalert2"
+import newsService from "../../../services/NewsService";
 
 function Subject() {
 
   const [subject, setSubject] = useState();
+    const [news, setNews] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Ensure that getAllNews is the correct method in your newsService
+                const fetchedData = await newsService.getSubject();
+                console.log(fetchedData.data)
+                const mappedData = fetchedData.data.map(item => ({
+                    subid: item.id,
+                    subname: item.subject
+
+
+                }));
+                console.log(mappedData);
+                setNews(mappedData);
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
   // Form validation
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -49,6 +74,7 @@ function Subject() {
           title: "Success!",
           text: "Officer Subject added successfully"
         })
+          window.location.href = '/officer-subject';
       } else {
         await Swal.fire({
           icon: "error",
@@ -232,7 +258,7 @@ function Subject() {
                             <div className="table-responsive">
                                 <TableContainer
                                     columns={columns}
-                                    data={data}
+                                    data={news}
                                     isGlobalFilter={true}
                                     isAddOptions={false}
                                     customPageSize={10}
