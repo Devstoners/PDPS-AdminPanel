@@ -1,12 +1,19 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import PropTypes from 'prop-types';
 import { Card, CardBody, Col, Row } from "reactstrap";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../components/Common/ChartsDynamicColor";
-
+import NewsService  from "../../services/NewsService";
+import newsService from "../../services/NewsService";
 const CardUser = ({ dataColors }) => {
   const apexCardUserChartColors = getChartColorsArray(dataColors);
+  const [publishedNewsCount, setPublishedNewsCount] = useState(0);
 
+  useEffect(async () => {
+    const data = await newsService.newsCount()
+    setPublishedNewsCount( data.data.count)
+  }, []);
+console.log('jj',publishedNewsCount)
   const series = [
     {
       name: "Current",
@@ -86,7 +93,7 @@ const CardUser = ({ dataColors }) => {
                 <div className="d-flex flex-wrap">
                   <div className="me-3">
                     <p className="text-muted mb-2">News</p>
-                    <h5 className="mb-0">15</h5>
+                    <h5 className="mb-0">{publishedNewsCount}</h5>
                   </div>
 
                   <div className="avatar-sm ms-auto">
