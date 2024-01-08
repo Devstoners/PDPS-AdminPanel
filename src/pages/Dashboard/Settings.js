@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect, useState} from "react"
 import { Link } from "react-router-dom"
 import {
   Card,
@@ -12,8 +12,17 @@ import {
 } from "reactstrap"
 
 import avatar from "../../assets/images/users/avatar-1.jpg"
+import newsService from "../../services/NewsService";
+
 
 const Settings = props => {
+  const [publishedNewsCount, setPublishedNewsCount] = useState(0);
+
+  useEffect(async () => {
+    const data = await newsService.getCount()
+    setPublishedNewsCount( data.data.count)
+  }, []);
+  console.log('jj',publishedNewsCount)
   return (
     <React.Fragment>
       <Col xl={4}>
@@ -40,7 +49,7 @@ const Settings = props => {
             <div className="d-flex flex-wrap">
               <div>
                 <p className="text-muted mb-1">Total Complains</p>
-                <h4 className="mb-3">130</h4>
+                <h4 className="mb-3">{publishedNewsCount}</h4>
               </div>
               <div className="ms-auto align-self-end">
                 <i className="bx bx-angry display-4 text-light"></i>

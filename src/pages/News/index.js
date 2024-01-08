@@ -38,6 +38,7 @@ import { isEmpty } from "lodash";
 import { useSelector, useDispatch } from "react-redux";
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
+import newsService from "../../services/NewsService";
 
 const News = props => {
 
@@ -45,9 +46,42 @@ const News = props => {
     document.title="Admin | PDPS";
 
     const dispatch = useDispatch();
-    const [news, setNews] = useState();
+   // const [news, setNews] = useState();
     const [startDate, setstartDate] = useState(new Date())
     const [endDate, setendDate] = useState(new Date())
+
+    // useEffect(async () => {
+    //     const data = await newsService.getAllNews();
+    //
+    //     setNews(data);
+    //
+    // }, []);
+
+    const [news, setNews] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Ensure that getAllNews is the correct method in your newsService
+                const fetchedData = await newsService.getAllNews();
+                const mappedData = fetchedData.data.AllNews.map(item => ({
+                    id: item.id,
+                    topice: item.news_locales[0]?.news_en , // Add a check for existence
+                    startDate: item.display_start_date,
+                    endDate: item.display_end_date,
+                    order: item.id,
+                }));
+                console.log(mappedData);
+                setNews(mappedData);
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    console.log(news);
     const startDateChange = date => {
         setstartDate(date)
     }
@@ -201,6 +235,11 @@ const News = props => {
         []
     );
 
+
+
+
+//    console.log(news);
+
     const data = [
         {
             "id": "2",
@@ -217,6 +256,7 @@ const News = props => {
             "order": "2",
         },
     ];
+
     useEffect(() => {
         if (news && !news.length) {
             dispatch(onGetNews());
@@ -312,7 +352,7 @@ const News = props => {
                                     {/*-----------------User List Table Start------------------*/}
                                     <TableContainer
                                         columns={columns}
-                                        data={data}
+                                        data={news}
                                         isGlobalFilter={true}
                                         handleNewsClick={handleNewsClicks}
                                         customPageSize={10}

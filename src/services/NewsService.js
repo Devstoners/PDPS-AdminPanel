@@ -17,7 +17,40 @@ const addNews = async (data) => {
     return some;
 
 };
-
+const getAllNews = async () => {
+    let responseData
+    await localStorage.getItem("auth-token")
+    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
+        await axios
+            .get("http://127.0.0.1:8000/api/news", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+                },
+            })
+            .then(resp => {
+                console.log(resp, "response")
+                responseData = resp
+            })
+    })
+    return responseData
+}
+const newsCount = async () => {
+    let responseData
+    await localStorage.getItem("auth-token")
+    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
+        await axios
+            .get("http://127.0.0.1:8000/api/newscount", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+                },
+            })
+            .then(resp => {
+                console.log(resp, "response")
+                responseData = resp
+            })
+    })
+    return responseData
+}
 // const logout = async () => {
 //     let logout;
 //     const response = await get("sanctum/csrf-cookie").then(async response => {
@@ -36,11 +69,30 @@ const addNews = async (data) => {
 //     })
 //     return logout;
 // }
-
+const getCount = async () => {
+    let responseData
+    await localStorage.getItem("auth-token")
+    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
+        await axios
+            .get("http://127.0.0.1:8000/api/count", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+                },
+            })
+            .then(resp => {
+                console.log(resp, "response")
+                responseData = resp
+            })
+    })
+    return responseData
+}
 const getSanctum= () => get("http://127.0.0.1:8000/sanctum/csrf-cookie");
 const NewsService = {
     addNews,
-    getSanctum
+    getSanctum,
+    getAllNews,
+    newsCount,
+    getCount,
 }
 
 export default NewsService

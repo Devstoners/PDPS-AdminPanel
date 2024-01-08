@@ -27,11 +27,11 @@ const admin = () => {
             <CardUser dataColors='["--bs-primary", "--bs-warning"]' />
             <Settings />
           </Row>
-          <Row>
-            <TapVisitors />
-            <Posts />
-            <Comments />
-          </Row>
+          {/*<Row>*/}
+          {/*  <TapVisitors />*/}
+          {/*  <Posts />*/}
+          {/*  <Comments />*/}
+          {/*</Row>*/}
         </Container>
       </div>
     </React.Fragment>
