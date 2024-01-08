@@ -40,7 +40,7 @@ import { isEmpty } from "lodash";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 
-const Member = props => {
+const Officer = props => {
 
   //meta title
   document.title="Admin | PDPS";
@@ -60,14 +60,14 @@ const Member = props => {
       registered: (contact && contact.registered) || "",
       status: (contact && contact.status) || "",
     },
-	
+
     validationSchema: Yup.object({
       name: Yup.string().required("Please Enter Name"),
 	  email: Yup.string().required("Please Enter Email"),
       position: Yup.string().required("Please Enter  Position"),    
       status: Yup.number().required("Please Select Enable or Disable"),
     }),
-	
+
 	
 	
     onSubmit: values => {
@@ -86,14 +86,15 @@ const Member = props => {
 		
       } else {
 {/* ----------------- Add user code ----------------- */}
-        const newUser = {
-          id: Math.floor(Math.random() * (30 - 20)) + 20,
-          name: values["name"],
-		  email: values["email"],
-          position: values["position"],           
-        };
-        dispatch(onAddNewUser(newUser));
-        validation.resetForm();
+        console.log("data coming")
+        // const newUser = {
+        //   id: Math.floor(Math.random() * (30 - 20)) + 20,
+        //   name: values["name"],
+		    //   email: values["email"],
+        //   position: values["position"],
+        // };
+        // dispatch(onAddNewUser(newUser));
+        // validation.resetForm();
       }
       toggle();
     },
@@ -449,4 +450,4 @@ const Member = props => {
   );
 };
 
-export default withRouter(Member);
+export default withRouter(Officer);
