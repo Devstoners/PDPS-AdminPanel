@@ -8,7 +8,7 @@ import DeleteModal from "../../../components/Common/DeleteModal";
 import EditPositionModal from "./EditPositionModal";
 import TableContainer from '../../../components/Common/TableContainer';
 import DatatableTables from "../../Tables/DatatableTables";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 
 import {
     Table,
@@ -27,10 +27,34 @@ import * as Yup from "yup";
 import loginService from "../../../services/LoginService"
 import Swal from "sweetalert2"
 import OfficerService from "../../../services/OfficerService"
+import newsService from "../../../services/NewsService";
 
 function Position() {
-
+    const history = useHistory();
     const [position, setPosition] = useState();
+    const [news, setNews] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Ensure that getAllNews is the correct method in your newsService
+                const fetchedData = await newsService.getPosition();
+                console.log(fetchedData.data)
+                const mappedData = fetchedData.data.map(item => ({
+                    id: item.id,
+                    position: item.position
+
+
+                }));
+                console.log(mappedData);
+                setNews(mappedData);
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
     // Form validation
     const validation = useFormik({
         // enableReinitialize : use this flag when initial values needs to be changed
@@ -51,6 +75,8 @@ function Position() {
             title: "Success!",
             text: "Officer Position added successfully"
           })
+            window.location.href = '/officer-position';
+
         } else {
           await Swal.fire({
             icon: "error",
@@ -233,7 +259,7 @@ function Position() {
                             <div className="table-responsive">
                                 <TableContainer
                                     columns={columns}
-                                    data={data}
+                                    data={news}
                                     isGlobalFilter={true}
                                     isAddOptions={false}
                                     customPageSize={10}
