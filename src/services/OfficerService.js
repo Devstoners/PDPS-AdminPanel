@@ -52,7 +52,7 @@ const OfficerService = {
   subject,
   position,
   getSanctum,
-    getOffers
+  getOffers
 }
 
 export default OfficerService

@@ -12,17 +12,43 @@ import {
 } from "reactstrap"
 
 import avatar from "../../assets/images/users/avatar-1.jpg"
-import newsService from "../../services/NewsService";
+import complainService from "../../services/ComplainService";
+
 
 
 const Settings = props => {
-  const [publishedNewsCount, setPublishedNewsCount] = useState(0);
+  const [complainCount, setComplainCount] = useState(0);
 
-  useEffect(async () => {
-    const data = await newsService.getCount()
-    setPublishedNewsCount( data.data.count)
+  useEffect(() => {
+    let isMounted = true; // Flag to track component mount status
+
+    const fetchData = async () => {
+      try {
+        const data = await complainService.getCount()
+        const complainCount = data.count;
+
+        // Check if the component is still mounted before updating state
+        if (isMounted) {
+          setComplainCount(complainCount);
+        }
+      } catch (error) {
+        console.error("Error fetching news count:", error);
+
+        // Handle the error, e.g., set a default value for visibleNewsCount
+        if (isMounted) {
+          setComplainCount("0");
+        }
+      }
+    };
+
+    fetchData(); // Invoke the fetchData function
+
+    // Cleanup function to update the mounted status
+    return () => {
+      isMounted = false;
+    };
   }, []);
-  console.log('jj',publishedNewsCount)
+
   return (
     <React.Fragment>
       <Col xl={4}>
@@ -49,7 +75,7 @@ const Settings = props => {
             <div className="d-flex flex-wrap">
               <div>
                 <p className="text-muted mb-1">Total Complains</p>
-                <h4 className="mb-3">{publishedNewsCount}</h4>
+                <h4 className="mb-3">{complainCount}</h4>
               </div>
               <div className="ms-auto align-self-end">
                 <i className="bx bx-angry display-4 text-light"></i>

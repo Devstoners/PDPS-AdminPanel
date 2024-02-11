@@ -1,155 +1,111 @@
 import { get, post } from "../helpers/api_helper"
-import axios from "axios";
+import axios from "axios"
 
-const addNews = async (data) => {
-    let some;
-    const response = await get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async response => {
-        console.log('test');
-        await axios.post("http://127.0.0.1:8000/api/news", data).then(res => {
-            console.log(res);
-            some = res;
-        }).catch(error => {
-            some = error;
-        });
-
-
-    })
-    return some;
-
+const apiInstance = axios.create({
+  baseURL: "http://127.0.0.1:8000",
+  withCredentials: true,
+});
+const getNews = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/news", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    result = error;
+  }
+  return result;
 };
-const getAllNews = async () => {
-    let responseData
-    await localStorage.getItem("auth-token")
-    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
-        await axios
-            .get("http://127.0.0.1:8000/api/news", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
-                },
-            })
-            .then(resp => {
-                console.log(resp, "response")
-                responseData = resp
-            })
-    })
-    return responseData
-}
+const addNews = async (data) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.post("/api/news", data, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error adding news:", error);
+    result = error;
+  }
+  return result;
+};
 
-const getPosition = async () => {
-    let responseData
-    await localStorage.getItem("auth-token")
-    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
-        await axios
-            .get("http://127.0.0.1:8000/api/addPosition", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
-                },
-            })
-            .then(resp => {
-                console.log(resp, "response")
-                responseData = resp
-            })
-    })
-    return responseData
-}
+const editNews = async (updatedNews) => {
+  console.log(updatedNews)
+  let authToken = localStorage.getItem("auth-token");
+  let result
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.put(`/api/news/${updatedNews.id}`, updatedNews, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data
+  } catch (error) {
+    console.error("Error editing news:", error);
+    result = error
+  }
+  return result
+};
 
-const getSubject = async () => {
-    let responseData
-    await localStorage.getItem("auth-token")
-    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
-        await axios
-            .get("http://127.0.0.1:8000/api/addSubject", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
-                },
-            })
-            .then(resp => {
-                console.log(resp, "response2")
-                responseData = resp
-            })
-    })
-    return responseData
-}
-const getAllcomplain = async () => {
-    let responseData
-    await localStorage.getItem("auth-token")
-    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
-        await axios
-            .get("http://127.0.0.1:8000/api/addComplain", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
-                },
-            })
-            .then(resp => {
-                console.log(resp, "response")
-                responseData = resp
-            })
-    })
-    return responseData
-}
-const newsCount = async () => {
-    let responseData
-    await localStorage.getItem("auth-token")
-    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
-        await axios
-            .get("http://127.0.0.1:8000/api/newscount", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
-                },
-            })
-            .then(resp => {
-                console.log(resp, "response")
-                responseData = resp
-            })
-    })
-    return responseData
-}
-// const logout = async () => {
-//     let logout;
-//     const response = await get("sanctum/csrf-cookie").then(async response => {
-//         /* console.log(response.status, 'test')
-//         let some = post(url.COMMON_LOGIN,data);
-//          console.log(some);
-//          return some;*/
-//         await axios.post(url.COMMON_LOGIN, data).then(res => {
-//             console.log(res);
-//             logout = res;
-//         }).catch(error => {
-//             logout = error;
-//         });
-//
-//
-//     })
-//     return logout;
-// }
-const getCount = async () => {
-    let responseData
-    await localStorage.getItem("auth-token")
-    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
-        await axios
-            .get("http://127.0.0.1:8000/api/count", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
-                },
-            })
-            .then(resp => {
-                console.log(resp, "response")
-                responseData = resp
-            })
-    })
-    return responseData
-}
-const getSanctum= () => get("http://127.0.0.1:8000/sanctum/csrf-cookie");
+const deleteNews = async (newsId) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.delete(`/api/news/${newsId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error deleting news:", error);
+    result = error;
+  }
+  return result;
+};
+
+
+const  newsCount = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/newscount", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    result = error;
+  }
+  return result;
+};
+
+
+
+const getSanctum = () => get("http://127.0.0.1:8000/sanctum/csrf-cookie")
 const NewsService = {
-    addNews,
-    getSanctum,
-    getAllNews,
-    newsCount,
-    getCount,
-    getAllcomplain,
-    getPosition,
-    getSubject
-
+  addNews,
+  editNews,
+  getSanctum,
+  getNews,
+  deleteNews,
+  newsCount,
 }
 
 export default NewsService

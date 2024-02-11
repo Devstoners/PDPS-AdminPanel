@@ -42,7 +42,7 @@ import { useSelector, useDispatch } from "react-redux";
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import ComplainDetailsModal from "./ComplainDetailsModal";
-import newsService from "../../services/NewsService";
+import ComplainService from "../../services/ComplainService"
 
 const Complain = props => {
 
@@ -60,15 +60,13 @@ const Complain = props => {
         const fetchData = async () => {
             try {
                 // Ensure that getAllNews is the correct method in your newsService
-                const fetchedData = await newsService.getAllcomplain();
+                const fetchedData = await ComplainService.getAllcomplain();
                 console.log(fetchedData.data)
                 const mappedData = fetchedData.data.map(item => ({
                     id: item.id,
-                    topice: item.topic, // Add a check for existence
+                    topic: item.complain, // Add a check for existence
                     cdate: item.complain_date,
-                    status: item.status
-                    ,
-
+                    status: item.status,
                 }));
                 console.log(mappedData);
                 setNews(mappedData);
@@ -166,21 +164,15 @@ const Complain = props => {
             },
 
             {
-                Header: "Heading",
+                Header: "Complain",
                 accessor: "topic",
                 disableFilters: true,
 
             },
 
             {
-                Header: "Date",
+                Header: "Action",
                 accessor: "cdate",
-                disableFilters: true,
-            },
-
-            {
-                Header: "Status",
-                accessor: "status",
                 disableFilters: true,
             },
 
@@ -202,26 +194,34 @@ const Complain = props => {
             },
 
             {
-                Header: 'Action',
+                Header: 'Add Action',
                 Cell: cellProps => {
                     return (
-                        <div className="d-flex gap-3">
-                            {/*-------------------Edit button--------------------- */}
-                            <Link
-                                to="#"
-                                className="text-success"
-                                onClick={() => {
-                                    const complainData = cellProps.row.original;
-                                    handleComplainClick(complainData);
-                                }}
-                            >
-                                <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                                <UncontrolledTooltip placement="top" target="edittooltip">
-                                    Edit
-                                </UncontrolledTooltip>
-                            </Link>
+                      <div className="d-flex justify-content-center gap-3">
+                          {/*-------------------Edit button--------------------- */}
+                          <Link
+                            to="#"
+                            className="text-success"
+                            onClick={() => {
+                                const complainData = cellProps.row.original;
+                                handleComplainClick(complainData);
+                            }}
+                          >
+                              <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                              <UncontrolledTooltip placement="top" target="edittooltip">
+                                  Edit
+                              </UncontrolledTooltip>
+                          </Link>
+                      </div>
+                    );
+                }
+            },
 
-                            {/*-------------------Delete button--------------------- */}
+            {
+                Header: 'Delete Complain',
+                Cell: cellProps => {
+                    return (
+                        <div className="d-flex justify-content-center gap-3">
                             <Link
                                 to="#"
                                 className="text-danger"
@@ -243,26 +243,7 @@ const Complain = props => {
         []
     );
 
-    const data = [
-        {
-            "id": "3",
-            "topic": "Water supply",
-            "cdate": "2022.12.25",
-            "status": "Completed",
-        },
-        {
-            "id": "2",
-            "topic": "Play Ground opening",
-            "cdate": "2022.12.25",
-            "status": "In Progress",
-        },
-        {
-            "id": "1",
-            "topic": "No buses in Kudugala Wattegama road",
-            "cdate": "2023.01.31",
-            "status": "No action",
-        },
-    ];
+    
     useEffect(() => {
         if (complain && !complain.length) {
             dispatch(onGetComplain());
