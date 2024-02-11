@@ -71,7 +71,7 @@ const deleteNews = async (newsId) => {
     });
     result = response.data;
   } catch (error) {
-    console.error("Error deleting news:", error);
+    console.error("Error Deleting News:", error);
     result = error;
   }
   return result;
