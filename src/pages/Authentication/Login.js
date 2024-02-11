@@ -60,17 +60,17 @@ const Login = props => {
           await localStorage.setItem("auth-token", data.data.token)
           await localStorage.setItem("user-role", data.data.user.roles[0].name)
           // window.location.href = '/dashboard';
-          await Swal.fire(
-              "Login Successfully!",
-              "",
-              "success"
-          )
+          // await Swal.fire(
+          //     "Login Successfully!",
+          //     "",
+          //     "success"
+          // )
           history.push("/dashboard")
         }else{
           await Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: "You have to no permission to login!"
+            text: "You do not have permission to login!"
           })
         }
       }else{

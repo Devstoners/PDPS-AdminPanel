@@ -4,7 +4,7 @@ import axios from "axios"
 const login = async (data) => {
   let some
   const response = await get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async response => {
-    console.log("test")
+    //console.log("test")
     await axios.post("http://127.0.0.1:8000/api/login", data).then(res => {
       console.log(res)
       some = res

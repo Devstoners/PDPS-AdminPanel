@@ -15,7 +15,7 @@ import { withTranslation } from "react-i18next"
 const SidebarContent = props => {
   const ref = useRef()
   const userRole = localStorage.getItem("user-role")
-  console.log(userRole)
+  //console.log(userRole)
   // Use ComponentDidMount and ComponentDidUpdate method symultaniously
   useEffect(() => {
     const pathName = props.location.pathname

@@ -4,16 +4,43 @@ import { Card, CardBody, Col, Row } from "reactstrap";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../components/Common/ChartsDynamicColor";
 import NewsService  from "../../services/NewsService";
-import newsService from "../../services/NewsService";
+
 const CardUser = ({ dataColors }) => {
   const apexCardUserChartColors = getChartColorsArray(dataColors);
-  const [publishedNewsCount, setPublishedNewsCount] = useState(0);
+  const [visibleNewsCount, setVisibleNewsCount] = useState(0);
 
-  useEffect(async () => {
-    const data = await newsService.newsCount()
-    setPublishedNewsCount( data.data.count)
+  useEffect(() => {
+    let isMounted = true; // Flag to track component mount status
+
+    const fetchData = async () => {
+      try {
+        const data = await NewsService.newsCount();
+        const newsCount = data.count;
+
+        // Check if the component is still mounted before updating state
+        if (isMounted) {
+          setVisibleNewsCount(newsCount);
+        }
+      } catch (error) {
+        console.error("Error fetching news count:", error);
+
+        // Handle the error, e.g., set a default value for visibleNewsCount
+        if (isMounted) {
+          setVisibleNewsCount("0");
+        }
+      }
+    };
+
+    fetchData(); // Invoke the fetchData function
+
+    // Cleanup function to update the mounted status
+    return () => {
+      isMounted = false;
+    };
   }, []);
-console.log('jj',publishedNewsCount)
+
+
+
   const series = [
     {
       name: "Current",
@@ -93,7 +120,7 @@ console.log('jj',publishedNewsCount)
                 <div className="d-flex flex-wrap">
                   <div className="me-3">
                     <p className="text-muted mb-2">News</p>
-                    <h5 className="mb-0">{publishedNewsCount}</h5>
+                    <h5 className="mb-0">{visibleNewsCount}</h5>
                   </div>
 
                   <div className="avatar-sm ms-auto">
