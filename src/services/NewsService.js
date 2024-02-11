@@ -76,7 +76,7 @@ const deleteNews = async (newsId) => {
   }
   return result;
 };
-
+// test
 
 const  newsCount = async () => {
   let authToken = localStorage.getItem("auth-token");
