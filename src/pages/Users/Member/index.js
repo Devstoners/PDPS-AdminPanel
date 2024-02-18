@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
-import { withRouter, Link } from "react-router-dom";
-import TableContainer from "../../../components/Common/TableContainer";
-import Select from "react-select";
+import React, { useEffect, useState, useRef, useMemo } from "react"
+import { withRouter, Link } from "react-router-dom"
+import TableContainer from "../../../components/Common/TableContainer"
+import Select from "react-select"
 import {
   Card,
   CardBody,
@@ -16,159 +16,238 @@ import {
   UncontrolledTooltip,
   Input,
   Form,
-} from "reactstrap";
-import * as Yup from "yup";
-import { useFormik } from "formik";
+} from "reactstrap"
+import * as Yup from "yup"
+import { useFormik } from "formik"
 
-
-import { Name, Email, Img, Position, Division, Party, Registered, Status  } from "./MemberCol";
+import {
+  Name,
+  Email,
+  Img,
+  Position,
+  Division,
+  Party,
+  Registered,
+  Status,
+} from "./MemberCol"
 
 //Import Breadcrumb
-import Breadcrumbs from "components/Common/Breadcrumb";
-import DeleteModal from "components/Common/DeleteModal";
-
+import Breadcrumbs from "components/Common/Breadcrumb"
+import DeleteModal from "components/Common/DeleteModal"
 
 import {
   getUsers as onGetUsers,
   addNewUser as onAddNewUser,
   updateUser as onUpdateUser,
   deleteUser as onDeleteUser,
-} from "store/contacts/actions";
+} from "store/contacts/actions"
 
-import { isEmpty } from "lodash";
+import { isEmpty } from "lodash"
 
 //redux
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux"
+import memberService from "../../../services/MemberService"
+import Swal from "sweetalert2"
 
 const Member = props => {
-
   //meta title
-  document.title="Admin | PDPS";
+  document.title = "Admin | PDPS"
 
-  const dispatch = useDispatch();
-  const [contact, setContact] = useState();
-  
-{/* ----------------- Validation ----------------- */}
+  const dispatch = useDispatch()
+  const [member, setMember] = useState()
+
+  // Get party for the dropdown
+  const [parties, setParties] = useState([]);
+  useEffect(() => {
+    const fetchParty = async () => {
+      try {
+        const parties = await memberService.getParty();
+        // console.log(party);
+        setParties(parties);
+      } catch (error) {
+        console.error("Error fetching party:", error);
+      }
+    };
+
+    fetchParty();
+  }, []);
+
+  // Get division for the dropdown
+  const [divisions, setDivisions] = useState([]);
+  useEffect(() => {
+    const fetchDivisions = async () => {
+      try {
+        const divisions = await memberService.getDivision();
+        // console.log("Divisions:", divisions);
+        setDivisions(divisions);
+      } catch (error) {
+        console.error("Error fetching divisions:", error);
+      }
+    };
+
+    fetchDivisions();
+  }, []);
+
+
+  {
+    /* ----------------- Validation ----------------- */
+  }
   const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
 
     initialValues: {
-      name: (contact && contact.name) || "",
-	  email: (contact && contact.email) || "",
-      position: (contact && contact.position) || "",
-      registered: (contact && contact.registered) || "",
-      status: (contact && contact.status) || "",
-      party: (contact && contact.party) || "",
+      nameEn: (member && member.nameEm) || "",
+      nameSi: (member && member.nameSi) || "",
+      nameTa: (member && member.nameTa) || "",
+      email: (member && member.email) || "",
+      image: (member && member.image) || "",
+      position: (member && member.position) || "",
+      division: (member && member.division) || "",
+      party: (member && member.party) || "",
+      tel: (member && member.tel) || "",
     },
-	
+
     validationSchema: Yup.object({
-      name: Yup.string().required("Please Enter Name"),
-	  email: Yup.string().required("Please Enter Email"),
-      position: Yup.string().required("Please Enter  Position"),
-      party: Yup.array().required("Please Select Party Name"),
-      status: Yup.number().required("Please Select Enable or Disable"),
+      nameEn: Yup.string().required("Please Enter Name in English"),
+      nameSi: Yup.string().required("Please Enter Name in Sinhala"),
+      nameTa: Yup.string().required("Please Enter Name in Tamil"),
+      email: Yup.string().required("Please Enter Email"),
+      image: Yup.mixed()
+        .test(
+          "fileType",
+          "Invalid file type. Only JPG files are allowed.",
+          value => (value ? value && value.type === "image/jpeg" : true)
+        )
+        .test("fileSize", "File size too large. Max size is 5MB.", value =>
+          value ? value && value.size <= 5 * 1024 * 1024 : true
+        )
+        .required("Please upload an image file."),
+      // position: Yup.string().required("Please Select  Position"),
+      // party: Yup.array().required("Please Select Party Name"),
+      // division: Yup.number().required("Please Select Enable or Disable"),
     }),
-	
-	
-	
-    onSubmit: values => {
-{/* ----------------- Edit user code ----------------- */}		
+
+    onSubmit: async values => {
+      {
+        /* ----------------- Edit user code ----------------- */
+      }
       if (isEdit) {
         const updateUser = {
-          id: contact.id,
+          id: member.id,
           name: values.name,
-		  email: values.email,
+          email: values.email,
           party: values.party,
           division: values.division,
           position: values.position,
           status: values.status,
-        };
-        dispatch(onUpdateUser(updateUser));
-        validation.resetForm();
-        setIsEdit(false);
-		
+        }
+        dispatch(onUpdateUser(updateUser))
+        validation.resetForm()
+        setIsEdit(false)
       } else {
-{/* ----------------- Add user code ----------------- */}
-        const newUser = {
-          id: Math.floor(Math.random() * (30 - 20)) + 20,
-          name: values["name"],
-		  email: values["email"],
-		  party: values["party"],
-		  division: values["division"],
-          position: values["position"],
-        };
-        dispatch(onAddNewUser(newUser));
-        validation.resetForm();
+        {
+          /* ----------------- Add user code ----------------- */
+        }
+        // const newUser = {
+        //   // id: Math.floor(Math.random() * (30 - 20)) + 20,
+        //   nameEn: values["nameEn"],
+        //   nameSi: values["nameSi"],
+        //   nameTa: values["nameTa"],
+        //   email: values["email"],
+        //   image: values["image"],
+        //   party: values["party"],
+        //   division: values["division"],
+        //   position: values["position"],
+        //   tel: values["tel"],
+        // }
+        // dispatch(onAddNewUser(newUser))
+        // validation.resetForm()
+        try {
+          const response = await memberService.addMember(values)
+          if (response.status === 201) {
+            await Swal.fire("Member Added Successfully!", "", "success")
+            validation.resetForm()
+            // history.push("/news")
+          } else {
+            // Handle other status codes (e.g., 400 for duplicate email)
+            console.error("Error", response.statusText)
+            // Show appropriate error message to the user
+            await Swal.fire("Error", "Failed to add member error", "error")
+          }
+        } catch (error) {
+          console.error("Error", error)
+          await Swal.fire("Error", "Failed to add member", "error")
+        }
       }
-      toggle();
+      toggle()
     },
-  });
-{/* ----------------- Validation/Edit/Add user code ends ----------------- */}
+  })
+  {
+    /* ----------------- Validation/Edit/Add user code ends ----------------- */
+  }
 
   const { users } = useSelector(state => ({
     users: state.contacts.users,
-  }));
+  }))
 
-  const [userList, setUserList] = useState([]);
-  const [modal, setModal] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
+  const [userList, setUserList] = useState([])
+  const [modal, setModal] = useState(false)
+  const [isEdit, setIsEdit] = useState(false)
 
   const columns = useMemo(
-  
     () => [
-	  {
+      {
         Header: "#",
         disableFilters: true,
         Cell: cellProps => {
-          return null;
+          return null
         },
       },
-     
+
       {
         Header: "Img",
         // accessor: "name",
-        disableFilters: true, 
-        accessor: (cellProps) => (
+        disableFilters: true,
+        accessor: cellProps => (
           <>
             {!cellProps.img ? (
-                <div className="avatar-xs">
-                    <span className="avatar-title rounded-circle">
-                        {cellProps.name.charAt(0)}
-                    </span>
-                </div>
+              <div className="avatar-xs">
+                <span className="avatar-title rounded-circle">
+                  {cellProps.name.charAt(0)}
+                </span>
+              </div>
             ) : (
-                <div>
-                    <img
-                        className="rounded-circle avatar-xs"
-                        src={cellProps.img}
-                        alt=""
-                    />
-                </div>
+              <div>
+                <img
+                  className="rounded-circle avatar-xs"
+                  src={cellProps.img}
+                  alt=""
+                />
+              </div>
             )}
-        </>
+          </>
         ),
       },
-	  
+
       {
         Header: "Name",
         accessor: "name",
         disableFilters: true,
         Cell: cellProps => {
-          return <Name {...cellProps} />;
+          return <Name {...cellProps} />
         },
       },
-	  
+
       {
         Header: "Email",
         accessor: "email",
         disableFilters: true,
         Cell: cellProps => {
-          return <Email {...cellProps} />;
+          return <Email {...cellProps} />
         },
       },
-	  
-	  {
+
+      {
         Header: "Position",
         accessor: "position",
         disableFilters: true,
@@ -178,41 +257,41 @@ const Member = props => {
               {" "}
               <Position {...cellProps} />{" "}
             </>
-          );
+          )
         },
       },
-	  
+
       {
         Header: "Registered",
         accessor: "registered",
         disableFilters: true,
         Cell: cellProps => {
-          return <Registered {...cellProps} />;
+          return <Registered {...cellProps} />
         },
       },
-	  
-	  {
+
+      {
         Header: "Status",
         accessor: "status",
         disableFilters: true,
         Cell: cellProps => {
-          return <Status {...cellProps} />;
+          return <Status {...cellProps} />
+        },
       },
-      },
-	  
+
       {
         Header: "Action",
-		disableFilters: true,
+        disableFilters: true,
         Cell: cellProps => {
           return (
             <div className="d-flex gap-3">
-{/*-------------------Edit button--------------------- */}
+              {/*-------------------Edit button--------------------- */}
               <Link
                 to="#"
                 className="text-success"
                 onClick={() => {
-                  const userData = cellProps.row.original;
-                  handleUserClick(userData);
+                  const userData = cellProps.row.original
+                  handleUserClick(userData)
                 }}
               >
                 <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
@@ -220,14 +299,14 @@ const Member = props => {
                   Edit
                 </UncontrolledTooltip>
               </Link>
-			  
-{/*-------------------Delete button--------------------- */}
+
+              {/*-------------------Delete button--------------------- */}
               <Link
                 to="#"
                 className="text-danger"
                 onClick={() => {
-                  const userData = cellProps.row.original;
-                  onClickDelete(userData);
+                  const userData = cellProps.row.original
+                  onClickDelete(userData)
                 }}
               >
                 <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
@@ -236,54 +315,54 @@ const Member = props => {
                 </UncontrolledTooltip>
               </Link>
             </div>
-          );
+          )
         },
       },
     ],
     []
-  );
+  )
 
   useEffect(() => {
     if (users && !users.length) {
-      dispatch(onGetUsers());
-      setIsEdit(false);
+      dispatch(onGetUsers())
+      setIsEdit(false)
     }
-  }, [dispatch, users]);
+  }, [dispatch, users])
 
   useEffect(() => {
-    setContact(users);
-    setIsEdit(false);
-  }, [users]);
+    setMember(users)
+    setIsEdit(false)
+  }, [users])
 
   useEffect(() => {
     if (!isEmpty(users) && !!isEdit) {
-      setContact(users);
-      setIsEdit(false);
+      setMember(users)
+      setIsEdit(false)
     }
-  }, [users]);
+  }, [users])
 
   const toggle = () => {
-    setModal(!modal);
-  };
+    setModal(!modal)
+  }
 
   const handleUserClick = arg => {
-    const user = arg;
+    const user = arg
 
-    setContact({
+    setMember({
       id: user.id,
       name: user.name,
-	  email: user.email,
+      email: user.email,
       party: user.party,
       position: user.position,
       status: user.status,
-    });
-    setIsEdit(true);
+    })
+    setIsEdit(true)
 
-    toggle();
-  };
+    toggle()
+  }
 
   //Pagination
-  var node = useRef();
+  var node = useRef()
   const onPaginationPageChange = page => {
     if (
       node &&
@@ -292,31 +371,31 @@ const Member = props => {
       node.current.props.pagination &&
       node.current.props.pagination.options
     ) {
-      node.current.props.pagination.options.onPageChange(page);
+      node.current.props.pagination.options.onPageChange(page)
     }
-  };
+  }
 
   //delete user
-  const [deleteModal, setDeleteModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false)
 
   const onClickDelete = users => {
-    setContact(users);
-    setDeleteModal(true);
-  };
+    setMember(users)
+    setDeleteModal(true)
+  }
 
   const handleDeleteUser = () => {
-    dispatch(onDeleteUser(contact));
-    onPaginationPageChange(1);
-    setDeleteModal(false);
-  };
+    dispatch(onDeleteUser(member))
+    onPaginationPageChange(1)
+    setDeleteModal(false)
+  }
 
   const handleUserClicks = () => {
-    setUserList("");
-    setIsEdit(false);
-    toggle();
-  };
+    setUserList("")
+    setIsEdit(false)
+    toggle()
+  }
 
-  const keyField = "id";
+  const keyField = "id"
 
   return (
     <React.Fragment>
@@ -325,8 +404,8 @@ const Member = props => {
         onDeleteClick={handleDeleteUser}
         onCloseClick={() => setDeleteModal(false)}
       />
-	  
-{/*------------------ Render Breadcrumbs----------------- */}	  
+
+      {/*------------------ Render Breadcrumbs----------------- */}
       <div className="page-content">
         <Container fluid>
           <Breadcrumbs title="Member" breadcrumbItem="Member List" />
@@ -334,7 +413,7 @@ const Member = props => {
             <Col lg="12">
               <Card>
                 <CardBody>
-{/*-----------------User List Table Start------------------*/}				
+                  {/*-----------------User List Table Start------------------*/}
                   <TableContainer
                     columns={columns}
                     data={users}
@@ -344,46 +423,94 @@ const Member = props => {
                     customPageSize={10}
                     className=""
                   />
-{/*-----------------User List Table End------------------*/}
-					  
-{/*-----------------Add & Edit user form Start------------------*/}
+                  {/*-----------------User List Table End------------------*/}
+
+                  {/*-----------------Add & Edit user form Start------------------*/}
                   <Modal isOpen={modal} toggle={toggle}>
                     <ModalHeader toggle={toggle} tag="h4">
-                      {!!isEdit ? "Edit User" : "Add User"}
+                      {!!isEdit ? "Edit Member" : "Add Member"}
                     </ModalHeader>
                     <ModalBody>
                       <Form
                         onSubmit={e => {
-                          e.preventDefault();
-                          validation.handleSubmit();
-                          return false;
+                          e.preventDefault()
+                          validation.handleSubmit()
+                          return false
                         }}
                       >
                         <Row form>
                           <Col xs={12}>
                             <div className="mb-3">
-                              <Label className="form-label">Name</Label>
+                              <Label className="form-label">Name English</Label>
                               <Input
-                                name="name"
+                                name="nameEn"
                                 type="text"
                                 onChange={validation.handleChange}
                                 onBlur={validation.handleBlur}
-                                value={validation.values.name || ""}
+                                value={validation.values.nameEn || ""}
                                 invalid={
-                                  validation.touched.name &&
-                                    validation.errors.name
+                                  validation.touched.nameEn &&
+                                  validation.errors.nameEn
                                     ? true
                                     : false
                                 }
                               />
-                              {validation.touched.name &&
-                                validation.errors.name ? (
+                              {validation.touched.nameEn &&
+                              validation.errors.nameEn ? (
                                 <FormFeedback type="invalid">
-                                  {validation.errors.name}
+                                  {validation.errors.nameEn}
                                 </FormFeedback>
                               ) : null}
                             </div>
-                            
+
+                            <div className="mb-3">
+                              <Label className="form-label">
+                                Name Sinhala{" "}
+                              </Label>
+                              <Input
+                                name="nameSi"
+                                type="text"
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.nameSi || ""}
+                                invalid={
+                                  validation.touched.nameSi &&
+                                  validation.errors.nameSi
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.nameSi &&
+                              validation.errors.nameSi ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.nameSi}
+                                </FormFeedback>
+                              ) : null}
+                            </div>
+
+                            <div className="mb-3">
+                              <Label className="form-label">Name Tamil</Label>
+                              <Input
+                                name="nameTa"
+                                type="text"
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.nameTa || ""}
+                                invalid={
+                                  validation.touched.nameTa &&
+                                  validation.errors.nameTa
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.nameTa &&
+                              validation.errors.nameTa ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.nameTa}
+                                </FormFeedback>
+                              ) : null}
+                            </div>
+
                             <div className="mb-3">
                               <Label className="form-label">Email</Label>
                               <Input
@@ -395,55 +522,111 @@ const Member = props => {
                                 value={validation.values.email || ""}
                                 invalid={
                                   validation.touched.email &&
-                                    validation.errors.email
+                                  validation.errors.email
                                     ? true
                                     : false
                                 }
                               />
                               {validation.touched.email &&
-                                validation.errors.email ? (
+                              validation.errors.email ? (
                                 <FormFeedback type="invalid">
                                   {validation.errors.email}
                                 </FormFeedback>
                               ) : null}
                             </div>
+
+                            <div className="mb-3">
+                              <Label className="form-label">Image</Label>
+                              <Input
+                                name="image"
+                                label="image"
+                                type="file"
+                                onChange={event => {
+                                  validation.setFieldValue(
+                                    "image",
+                                    event.currentTarget.files[0]
+                                  )
+                                }}
+                                onBlur={validation.handleBlur}
+                                invalid={
+                                  validation.touched.image &&
+                                  validation.errors.image
+                                }
+                              />
+                              {validation.touched.image &&
+                                validation.errors.image && (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.image}
+                                  </FormFeedback>
+                                )}
+                            </div>
+
+                            <div className="mb-3">
+                              <Label className="form-label">Telephone</Label>
+                              <Input
+                                name="tel"
+                                label="tel"
+                                type="tel"
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.tel || ""}
+                                invalid={
+                                  validation.touched.tel &&
+                                  validation.errors.tel
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.tel &&
+                              validation.errors.tel ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.tel}
+                                </FormFeedback>
+                              ) : null}
+                            </div>
+
                             <div className="mb-3">
                               <Label className="form-label">Division</Label>
 
                               <Select
-                                  name = "division"
-                                  isMulti={true}
-                                  onChange={() => {}}
-                                  className="select2-selection"
-                              />
+                                name="division"
+                                isMulti={false} // If division allows multiple selection, otherwise set it to false
+                                onChange={(selectedOptions) => {
+                                  validation.setFieldValue("division", selectedOptions);
+                                }}
 
+                                options={divisions.AllDivisions && divisions.AllDivisions.map((division) => ({
+                                  value: division.id,
+                                  label: division.division_en,
+                                }))}
+
+                              />
 
                               {validation.touched.division &&
                               validation.errors.division ? (
-                                  <FormFeedback type="invalid">
-                                    {validation.errors.division}
-                                  </FormFeedback>
+                                <FormFeedback type="invalid">
+                                  {validation.errors.division}
+                                </FormFeedback>
                               ) : null}
                             </div>
 
                             <div className="mb-3">
                               <Label className="form-label">Party</Label>
                               <Select
-								name = "party"
-								isMulti={false}
-								onChange={() => {}}
-								className="select2-selection"
-                                onBlur={validation.handleBlur}
-                                value={validation.values.party || ""}
-                                invalid={
-                                  validation.touched.party &&
-                                    validation.errors.party
-                                    ? true
-                                    : false
-                                }
+                                name="party"
+                                isMulti={false}
+                                onChange={(selectedOptions) => {
+                                  validation.setFieldValue("party", selectedOptions);
+                                }}
+
+                                options={parties.AllParties && parties.AllParties.map((party) => ({
+                                  value: party.id,
+                                  label: party.party,
+                                }))}
+
                               />
                               {validation.touched.party &&
-                                validation.errors.party ? (
+                              validation.errors.party ? (
                                 <FormFeedback type="invalid">
                                   {validation.errors.party}
                                 </FormFeedback>
@@ -454,18 +637,17 @@ const Member = props => {
                               <Label className="form-label">Position</Label>
 
                               <Select
-                                  name = "position"
-                                  isMulti={true}
-                                  onChange={() => {}}
-                                  className="select2-selection"
+                                name="position"
+                                isMulti={true}
+                                onChange={() => {}}
+                                className="select2-selection"
                               />
-
 
                               {validation.touched.position &&
                               validation.errors.position ? (
-                                  <FormFeedback type="invalid">
-                                    {validation.errors.position}
-                                  </FormFeedback>
+                                <FormFeedback type="invalid">
+                                  {validation.errors.position}
+                                </FormFeedback>
                               ) : null}
                             </div>
                           </Col>
@@ -485,17 +667,16 @@ const Member = props => {
                       </Form>
                     </ModalBody>
                   </Modal>
-{/*-----------------Add & Edit user form Ends------------------*/}
-				  
+                  {/*-----------------Add & Edit user form Ends------------------*/}
                 </CardBody>
               </Card>
             </Col>
           </Row>
         </Container>
       </div>
-{/*------------------ Render Breadcrumbs Ends----------------- */}	  
+      {/*------------------ Render Breadcrumbs Ends----------------- */}
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default withRouter(Member);
+export default withRouter(Member)

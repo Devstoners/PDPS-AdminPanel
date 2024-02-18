@@ -22,26 +22,36 @@ import {
 // Formik validation
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import memberService from "../../../services/MemberService"
+import Swal from "sweetalert2"
 
 function Party() {
 
     const [party, setParty] = useState();
     // Form validation
-    const validation = useFormik({
-        // enableReinitialize : use this flag when initial values needs to be changed
-        enableReinitialize: true,
-
-        initialValues: {
-            partyname: (party && party.partyname) || "",
-        },
-        validationSchema: Yup.object({
-            partyname: Yup.string().required("Please Enter Party Name"),
-        }),
-        onSubmit: (values) => {
-            console.log("values", values);
-            validation.resetForm();
-        }
-    });
+  const validation = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      partyEn: "",
+      partySi: "",
+      partyTa: "",
+    },
+    validationSchema: Yup.object({
+      partyEn: Yup.string().required("Please Enter Party Name in English"),
+      partySi: Yup.string().required("Please Enter Party Name in Sinhala"),
+      partyTa: Yup.string().required("Please Enter Party Name in Tamil"),
+    }),
+    onSubmit: async values => {
+      try {
+        await memberService.addParty(values)
+        await Swal.fire("Party Added Successfully!", "", "success")
+        setRefreshTable(prevRefresh => !prevRefresh)
+        validation.resetForm()
+      } catch (error) {
+        console.error("Error", error)
+      }
+    },
+  })
 
     const [formValidation, setValidation] = useState({
         partyid: null,
@@ -170,12 +180,8 @@ function Party() {
                 <Col xl={4}>
                     <Card>
                         <CardBody>
-                            <CardTitle className="mb-4">Add </CardTitle>
-                            <Form onSubmit={(e) => {
-                                e.preventDefault();
-                                validation.handleSubmit();
-                                return false;
-                            }}>
+                            <CardTitle className="mb-4">Add Party</CardTitle>
+                          <Form onSubmit={validation.handleSubmit}>
                                 {/*
                                 <div className="mb-3">
                                     <Label htmlFor="posid" className="col-form-label col-lg-2">
@@ -191,27 +197,74 @@ function Party() {
                                 </div>
                                 */}
                                 <div className="mb-3">
-                                    <Label htmlFor="partyname" className="col-form-label col-lg-4">
-                                        Party Name
+                                    <Label htmlFor="partyEn" className="col-form-label col-lg-4">
+                                        English
                                     </Label>
                                     <Input
-                                        id="partyname"
-                                        name="partyname"
+                                        id="partyEn"
+                                        name="partyEn"
                                         type="text"
                                         className="form-control"
-                                        placeholder="Enter Party ..."
+                                        placeholder="Party name"
                                         onChange={validation.handleChange}
                                         onBlur={validation.handleBlur}
-                                        value={validation.values.partyname || ""}
+                                        value={validation.values.partyEn || ""}
                                         invalid={
-                                            validation.touched.partyname && validation.errors.partyname ? true : false
+                                            validation.touched.partyEn && validation.errors.partyEn ? true : false
                                         }
                                     />
-                                    {validation.touched.partyname && validation.errors.partyname ? (
-                                        <FormFeedback type="invalid">{validation.errors.partyname}</FormFeedback>
+                                    {validation.touched.partyEn && validation.errors.partyEn ? (
+                                        <FormFeedback type="invalid">{validation.errors.partyEn}</FormFeedback>
                                     ) : null}
 
                                 </div>
+
+                              <div className="mb-3">
+                                <Label htmlFor="partySi" className="col-form-label col-lg-4">
+                                  Sinhala
+                                </Label>
+                                <Input
+                                  id="partySi"
+                                  name="partySi"
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="පක්ෂයේ නම"
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.partySi || ""}
+                                  invalid={
+                                    validation.touched.partySi && validation.errors.partySi ? true : false
+                                  }
+                                />
+                                {validation.touched.partySi && validation.errors.partySi ? (
+                                  <FormFeedback type="invalid">{validation.errors.partySi}</FormFeedback>
+                                ) : null}
+
+                              </div>
+
+                              <div className="mb-3">
+                                <Label htmlFor="partyTa" className="col-form-label col-lg-4">
+                                  Tamil
+                                </Label>
+                                <Input
+                                  id="partyTa"
+                                  name="partyTa"
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="கட்சியின் பெயர்"
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.partyTa || ""}
+                                  invalid={
+                                    validation.touched.partyTa && validation.errors.partyTa ? true : false
+                                  }
+                                />
+                                {validation.touched.partyTa && validation.errors.partyTa ? (
+                                  <FormFeedback type="invalid">{validation.errors.partyTa}</FormFeedback>
+                                ) : null}
+
+                              </div>
+
                                 <div>
                                     <button type="submit" className="btn btn-primary w-md">
                                         Add
@@ -224,7 +277,7 @@ function Party() {
                 <Col xl={8}>
                     <Card>
                         <CardBody>
-                            <CardTitle className="h4"> Edit | Delete </CardTitle>
+                            <CardTitle className="h4"> Edit | Delete Party </CardTitle>
                             <div className="table-responsive">
                                 <TableContainer
                                     columns={columns}

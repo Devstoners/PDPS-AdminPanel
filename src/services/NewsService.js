@@ -76,14 +76,14 @@ const deleteNews = async (newsId) => {
   }
   return result;
 };
-// test
+
 
 const  newsCount = async () => {
   let authToken = localStorage.getItem("auth-token");
   let result;
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response = await apiInstance.get("/api/newscount", {
+    const response = await apiInstance.get("/api/newsCount", {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
