@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, { useState, useEffect } from "react";
 import {
     Col,
     Form, FormFeedback,
@@ -10,124 +10,182 @@ import {
     Row
 } from "reactstrap"
 import PropTypes from 'prop-types'
+import Swal from "sweetalert2";
 // Formik validation
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import memberService from "../../../services/MemberService";
 
-const EditPartyModal = ({ show, onClickEdit, onCloseClick }) => {
-    const [party, setParty] = useState();
-    // Form validation
-    const validation = useFormik({
-        // enableReinitialize : use this flag when initial values needs to be changed
-        enableReinitialize: true,
+const EditPartyModal = ({ show, onClickEdit, onCloseClick, party, onUpdateSuccess }) => {
+  const [editedParty, setEditedParty] = useState({id:"", partyEn: "", partySi: "", partyTa: "" });
 
-        initialValues: {
-            partyid: (party && party.partyid) || "",
-            partyname: (party && party.partyname) || "",
-        },
-        validationSchema: Yup.object({
-            partyid: Yup.string().required("Please Enter Party ID"),
-            partyname: Yup.string().required("Please Enter Party Name"),
-        }),
-        onSubmit: (values) => {
-            console.log("values", values);
-            validation.resetForm();
-        }
-    });
-
-    const [formValidation, setValidation] = useState({
-        partyid: null,
-        partyname: null,
-    });
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        const modifiedV = { ...formValidation };
-        var partyid = document.getElementById("partyid").value;
-        var partyname = document.getElementById("partyname").value;
-
-
-        if (partyid === "") {
-            modifiedV["partyid"] = false;
-        } else {
-            modifiedV["partyid"] = true;
-        }
-
-        if (partyname === "") {
-            modifiedV["partyname"] = false;
-        } else {
-            modifiedV["partyname"] = true;
-        }
-        setValidation(modifiedV);
+  useEffect(() => {
+    if (show) {
+      setEditedParty(party);
+      console.log(party)
     }
+  }, [show, party]); // Include party prop in the dependency array
 
+  const validation = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      id: editedParty.id,
+      partyEn: editedParty.partyEn,
+      partySi: editedParty.partySi,
+      partyTa: editedParty.partyTa,
+    },
+    validationSchema: Yup.object({
+      id: Yup.string().required("Please Enter party ID"),
+      partyEn: Yup.string().required("Please Enter party in English"),
+      partySi: Yup.string().required("Please Enter party in Sinhala"),
+      partyTa: Yup.string().required("Please Enter party in Tamil"),
+    }),
+    onSubmit: async values => {
+      try {
+        const updateParty = {
+          id: editedParty.id,
+          partyEn: values.partyEn,
+          partySi: values.partySi,
+          partyTa: values.partyTa,
+        };
+        await memberService.editParty(updateParty);
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Party updated successfully!",
+        });
+        validation.resetForm();
+        onCloseClick(); // Close the modal
+        onUpdateSuccess(); // Call the onUpdateSuccess function
+      } catch (error) {
+        console.error("Error editing party : ", error);
+      }
+    },
+  });
 
     return (
-    <Modal size="sm" isOpen={show} toggle={onCloseClick}  centered={true}>
+    <Modal size="lg" isOpen={show} toggle={onCloseClick}  centered={true}>
       <div className="modal-content">
       <ModalHeader>
           <div className="h4">Edit Party</div>
           <button type="button" onClick={onCloseClick} className="btn-close position-absolute end-0 top-0 m-3"></button>
       </ModalHeader>
         <ModalBody className="px-4 py-5">
-            <Form onSubmit={(e) => {
-                e.preventDefault();
-                validation.handleSubmit();
-                return false;
-            }}>
+          <Form onSubmit={validation.handleSubmit}>
             <Row form>
                 <Col xs={12}>
-                    <div className="mb-3">
-                        <Label htmlFor="partyid" className="form-label">
-                            Party ID
-                        </Label>
-                        <Input
-                            id="partyid"
-                            name="partyid"
-                            type="number"
-                            className="form-control"
-                            placeholder="Party ID..."
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.partyid || ""}
-                            invalid={
-                                validation.touched.partyid && validation.errors.partyid ? true : false
-                            }
-                        />
-                        {validation.touched.partyid && validation.errors.partyid ? (
-                            <FormFeedback type="invalid">{validation.errors.partyid}</FormFeedback>
-                        ) : null}
-                    </div>
+                  <div className="mb-3">
+                    <Label
+                      htmlFor="partyEn"
+                      className="col-form-label col-lg-4"
+                    >
+                      English
+                    </Label>
+                    <Input
+                      id="partyEn"
+                      name="partyEn"
+                      type="text"
+                      className="form-control"
+                      placeholder="Party name"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.partyEn || ""}
+                      invalid={
+                        validation.touched.partyEn &&
+                        validation.errors.partyEn
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.partyEn &&
+                    validation.errors.partyEn ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.partyEn}
+                      </FormFeedback>
+                    ) : null}
+                  </div>
 
-                    <div className="mb-3">
-                      <Label htmlFor="partyname" className="form-label">
-                        Party Name
-                      </Label>
-                      <Input
-                          id="partyname"
-                          name="partyname"
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter Party ..."
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.partyname || ""}
-                          invalid={
-                              validation.touched.partyname && validation.errors.partyname ? true : false
-                          }
-                      />
-                        {validation.touched.partyname && validation.errors.partyname ? (
-                            <FormFeedback type="invalid">{validation.errors.partyname}</FormFeedback>
-                        ) : null}
-                    </div>
+                  <div className="mb-3">
+                    <Label
+                      htmlFor="partySi"
+                      className="col-form-label col-lg-4"
+                    >
+                      Sinhala
+                    </Label>
+                    <Input
+                      id="partySi"
+                      name="partySi"
+                      type="text"
+                      className="form-control"
+                      placeholder="පක්ෂයේ නම"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.partySi || ""}
+                      invalid={
+                        validation.touched.partySi &&
+                        validation.errors.partySi
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.partySi &&
+                    validation.errors.partySi ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.partySi}
+                      </FormFeedback>
+                    ) : null}
+                  </div>
+
+                  <div className="mb-3">
+                    <Label
+                      htmlFor="partyTa"
+                      className="col-form-label col-lg-4"
+                    >
+                      Tamil
+                    </Label>
+                    <Input
+                      id="partyTa"
+                      name="partyTa"
+                      type="text"
+                      className="form-control"
+                      placeholder="கட்சியின் பெயர்"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.partyTa || ""}
+                      invalid={
+                        validation.touched.partyTa &&
+                        validation.errors.partyTa
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.partyTa &&
+                    validation.errors.partyTa ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.partyTa}
+                      </FormFeedback>
+                    ) : null}
+                  </div>
                 </Col>
             </Row>
             <Row>
                 <Col>
-                    <div className="d-flex gap-3">
-                      <button type="submit" className="btn btn-success save-user" onClick={onClickEdit}>Save</button>
-                      <button type="button" className="btn btn-secondary" onClick={onCloseClick}>Close</button>
-                    </div>
+                  <div className="d-flex gap-3">
+                    <button
+                      type="submit"
+                      className="btn btn-success save-user"
+                      onClick={onClickEdit}
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={onCloseClick}
+                    >
+                      Close
+                    </button>
+                  </div>
                 </Col>
             </Row>
             </Form>
@@ -140,6 +198,8 @@ const EditPartyModal = ({ show, onClickEdit, onCloseClick }) => {
 EditPartyModal.propTypes = {
   onCloseClick: PropTypes.func,
   onClickEdit: PropTypes.func,
-  show: PropTypes.any
+  show: PropTypes.any,
+  party: PropTypes.object,
+  onUpdateSuccess: PropTypes.func, // Add prop type for onUpdateSuccess
 }
 export default EditPartyModal

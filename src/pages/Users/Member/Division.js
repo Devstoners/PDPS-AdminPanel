@@ -27,6 +27,7 @@ const Division = () => {
   const [divisionList, setDivisionList] = useState([])
   const [refreshTable, setRefreshTable] = useState(false)
   const [editedDivision, setEditedDivision] = useState({})
+  const [division, setDivision] = useState({})
   const [modal, setModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [editDivisionModal, setEditDivisionModal] = useState(false)
@@ -131,13 +132,13 @@ const Division = () => {
 
   //Delete
   const onClickDelete = division => {
-    setEditedDivision(division)
+    setDivision(division)
     setDeleteModal(true)
   }
 
   const handleDeleteDivision = async () => {
     try {
-      await memberService.deleteDivision(editedDivision.id)
+      await memberService.deleteDivision(division.id)
       setDeleteModal(false)
       setRefreshTable(prevRefresh => !prevRefresh)
     } catch (error) {
@@ -150,7 +151,7 @@ const Division = () => {
   }
   //Edit
   const onClickEdit = division => {
-    setEditedDivision(division)
+    setDivision(division)
     setEditDivisionModal(true)
   }
 
@@ -159,7 +160,7 @@ const Division = () => {
   };
 
   const handleEditDivision = arg => {
-    setEditedDivision({
+    setDivision({
       id: arg.id,
       divisionEn: arg.divisionEn,
       divisionSi: arg.divisionSi,
@@ -186,7 +187,7 @@ const Division = () => {
         show={editDivisionModal}
         onCloseClick={() => setEditDivisionModal(false)}
         onClickEdit={handleEditDivision}
-        division={editedDivision} // Pass the editedDivision state as division prop
+        division={division} // Pass the editedDivision state as division prop
         onUpdateSuccess={onUpdateSuccess}
       />
 

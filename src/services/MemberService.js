@@ -87,14 +87,14 @@ const editDivision = async (updateDivision) => {
   let result
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response =  await apiInstance.put(`/api/memberDivision/${updateDivision.id}`, updateDivision, {
+    const response =  await apiInstance.put(`/api/memberParty/${updateDivision.id}`, updateDivision, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
     });
     result = response.data
   } catch (error) {
-    console.error("Error editing division:", error);
+    console.error("Error editing party:", error);
     result = error
   }
   return result
@@ -136,15 +136,136 @@ const getParty = async () => {
   }
   return result;
 };
+
+const deleteParty = async (divisionId) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.delete(`/api/memberParty/${divisionId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error deleting party:", error);
+    result = error;
+  }
+  return result;
+};
+
+const editParty = async (updateParty) => {
+  console.log(updateParty)
+  let authToken = localStorage.getItem("auth-token");
+  let result
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.put(`/api/memberParty/${updateParty.id}`, updateParty, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data
+  } catch (error) {
+    console.error("Error editing division:", error);
+    result = error
+  }
+  return result
+};
+
+// --------------------------- Position -----------------------------
+const addPosition = async (data) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.post("/api/memberPosition", data, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error adding position:", error);
+    result = error;
+  }
+  return result;
+};
+
+const getPosition = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/memberPosition", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error fetching position:", error);
+    result = error;
+  }
+  return result;
+};
+
+const deletePosition = async (positionId) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.delete(`/api/memberPosition/${positionId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error deleting position:", error);
+    result = error;
+  }
+  return result;
+};
+
+const editPosition = async (updatePosition) => {
+  console.log(updatePosition)
+  let authToken = localStorage.getItem("auth-token");
+  let result
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.put(`/api/memberPosition/${updatePosition.id}`, updatePosition, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data
+  } catch (error) {
+    console.error("Error editing position:", error);
+    result = error
+  }
+  return result
+};
+
 const getSanctum = () => get("http://127.0.0.1:8000/sanctum/csrf-cookie")
 const MemberService = {
   addMember,
+
   addDivision,
   getDivision,
   deleteDivision,
   editDivision,
+
   addParty,
   getParty,
+  deleteParty,
+  editParty,
+
+  addPosition,
+  getPosition,
+  deletePosition,
+  editPosition,
 }
 
 export default MemberService
