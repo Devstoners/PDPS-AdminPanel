@@ -54,41 +54,82 @@ const Member = props => {
   document.title = "Admin | PDPS"
 
   const dispatch = useDispatch()
+  const [memberList, setMemberList] = useState([])
   const [member, setMember] = useState()
-
-  // Get party for the dropdown
-  const [parties, setParties] = useState([]);
+  const [refreshTable, setRefreshTable] = useState(false)
+  //Refresh the table
   useEffect(() => {
-    const fetchParty = async () => {
-      try {
-        const parties = await memberService.getParty();
-        // console.log(party);
-        setParties(parties);
-      } catch (error) {
-        console.error("Error fetching party:", error);
-      }
-    };
+    fetchData()
+  }, [refreshTable])
 
-    fetchParty();
-  }, []);
+  //View data in the table
+  const fetchData = async () => {
+    try {
+      const fetchedData = await memberService.getMember()
+      // console.log(fetchedData)
+      const allMemberArray = fetchedData.AllMembers || []
+      console.log(allMemberArray)
+      const mappedData = allMemberArray.map((item, index) => ({
+        displayId: allMemberArray.length - index,
+        id: item.id,
+        img: item.image,
+        nameEn: item.name_en,
+        status: item.user.status,
+      }))
+      setMemberList(mappedData)
+    } catch (error) {
+      console.error("Error fetching party:", error)
+    }
+  }
+
 
   // Get division for the dropdown
-  const [divisions, setDivisions] = useState([]);
+  const [divisions, setDivisions] = useState([])
   useEffect(() => {
     const fetchDivisions = async () => {
       try {
-        const divisions = await memberService.getDivision();
+        const divisions = await memberService.getDivision()
         // console.log("Divisions:", divisions);
-        setDivisions(divisions);
+        setDivisions(divisions)
       } catch (error) {
-        console.error("Error fetching divisions:", error);
+        console.error("Error fetching divisions:", error)
       }
-    };
+    }
 
-    fetchDivisions();
-  }, []);
+    fetchDivisions()
+  }, [])
 
+  // Get party for the dropdown
+  const [parties, setParties] = useState([])
+  useEffect(() => {
+    const fetchParty = async () => {
+      try {
+        const parties = await memberService.getParty()
+        console.log(parties);
+        setParties(parties)
+      } catch (error) {
+        console.error("Error fetching party:", error)
+      }
+    }
 
+    fetchParty()
+  }, [])
+
+  // Get position for the dropdown
+  const [positions, setPositions] = useState([])
+  useEffect(() => {
+    const fetchPosition = async () => {
+      try {
+        const positions = await memberService.getPosition()
+        console.log(positions);
+        setPositions(positions)
+      } catch (error) {
+        console.error("Error fetching positions:", error)
+      }
+    }
+
+    fetchPosition()
+  }, [])
   {
     /* ----------------- Validation ----------------- */
   }
@@ -100,8 +141,8 @@ const Member = props => {
       nameSi: (member && member.nameSi) || "",
       nameTa: (member && member.nameTa) || "",
       email: (member && member.email) || "",
-      image: (member && member.image) || "",
-      position: (member && member.position) || "",
+      // img: (member && member.img) || "",
+      // position: (member && member.position) || "",
       division: (member && member.division) || "",
       party: (member && member.party) || "",
       tel: (member && member.tel) || "",
@@ -112,7 +153,11 @@ const Member = props => {
       nameSi: Yup.string().required("Please Enter Name in Sinhala"),
       nameTa: Yup.string().required("Please Enter Name in Tamil"),
       email: Yup.string().required("Please Enter Email"),
-      image: Yup.mixed()
+      party: Yup.array().required("Please Select Party Name"),
+      division: Yup.array().required("Please Select Division"),
+      position: Yup.array().required("Please Select  Position"),
+
+      img: Yup.mixed()
         .test(
           "fileType",
           "Invalid file type. Only JPG files are allowed.",
@@ -122,9 +167,6 @@ const Member = props => {
           value ? value && value.size <= 5 * 1024 * 1024 : true
         )
         .required("Please upload an image file."),
-      // position: Yup.string().required("Please Select  Position"),
-      // party: Yup.array().required("Please Select Party Name"),
-      // division: Yup.number().required("Please Select Enable or Disable"),
     }),
 
     onSubmit: async values => {
@@ -145,28 +187,13 @@ const Member = props => {
         validation.resetForm()
         setIsEdit(false)
       } else {
-        {
-          /* ----------------- Add user code ----------------- */
-        }
-        // const newUser = {
-        //   // id: Math.floor(Math.random() * (30 - 20)) + 20,
-        //   nameEn: values["nameEn"],
-        //   nameSi: values["nameSi"],
-        //   nameTa: values["nameTa"],
-        //   email: values["email"],
-        //   image: values["image"],
-        //   party: values["party"],
-        //   division: values["division"],
-        //   position: values["position"],
-        //   tel: values["tel"],
-        // }
-        // dispatch(onAddNewUser(newUser))
-        // validation.resetForm()
+        /* ----------------- Add user code ----------------- */
         try {
           const response = await memberService.addMember(values)
           if (response.status === 201) {
             await Swal.fire("Member Added Successfully!", "", "success")
             validation.resetForm()
+            toggle()
             // history.push("/news")
           } else {
             // Handle other status codes (e.g., 400 for duplicate email)
@@ -197,23 +224,24 @@ const Member = props => {
   const columns = useMemo(
     () => [
       {
-        Header: "#",
+        Header: "ID",
+        accessor: "displayId",
         disableFilters: true,
-        Cell: cellProps => {
-          return null
-        },
       },
 
       {
         Header: "Img",
-        // accessor: "name",
         disableFilters: true,
         accessor: cellProps => (
           <>
             {!cellProps.img ? (
               <div className="avatar-xs">
                 <span className="avatar-title rounded-circle">
-                  {cellProps.name.charAt(0)}
+                  <img
+                    className="rounded-circle avatar-xs"
+                    src={cellProps.img}
+                    alt=""
+                  />
                 </span>
               </div>
             ) : (
@@ -231,42 +259,10 @@ const Member = props => {
 
       {
         Header: "Name",
-        accessor: "name",
+        accessor: "nameEn",
         disableFilters: true,
         Cell: cellProps => {
           return <Name {...cellProps} />
-        },
-      },
-
-      {
-        Header: "Email",
-        accessor: "email",
-        disableFilters: true,
-        Cell: cellProps => {
-          return <Email {...cellProps} />
-        },
-      },
-
-      {
-        Header: "Position",
-        accessor: "position",
-        disableFilters: true,
-        Cell: cellProps => {
-          return (
-            <>
-              {" "}
-              <Position {...cellProps} />{" "}
-            </>
-          )
-        },
-      },
-
-      {
-        Header: "Registered",
-        accessor: "registered",
-        disableFilters: true,
-        Cell: cellProps => {
-          return <Registered {...cellProps} />
         },
       },
 
@@ -275,9 +271,31 @@ const Member = props => {
         accessor: "status",
         disableFilters: true,
         Cell: cellProps => {
-          return <Status {...cellProps} />
+          let statusText
+          switch (cellProps.value) {
+            case 0:
+              statusText = "Unregistered"
+              break
+            case 1:
+              statusText = "Active"
+              break
+            case 2:
+              statusText = "Disabled"
+              break
+            // default:
+            //   statusText = "Unknown";
+          }
+          return <span>{statusText}</span>
         },
       },
+
+      //
+      // {
+      //   Header: "Status",
+      //   accessor: "status",
+      //   disableFilters: true,
+      //
+      // },
 
       {
         Header: "Action",
@@ -305,8 +323,8 @@ const Member = props => {
                 to="#"
                 className="text-danger"
                 onClick={() => {
-                  const userData = cellProps.row.original
-                  onClickDelete(userData)
+                  const memberData = cellProps.row.original
+                  onClickDelete(memberData)
                 }}
               >
                 <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
@@ -350,11 +368,14 @@ const Member = props => {
 
     setMember({
       id: user.id,
-      name: user.name,
+      nameEn: user.nameEn,
+      nameSi: user.nameSi,
+      nameTa: user.nameTa,
       email: user.email,
       party: user.party,
-      position: user.position,
-      status: user.status,
+      // position: user.position,
+      img: user.img,
+      division:user.division
     })
     setIsEdit(true)
 
@@ -378,15 +399,19 @@ const Member = props => {
   //delete user
   const [deleteModal, setDeleteModal] = useState(false)
 
-  const onClickDelete = users => {
-    setMember(users)
+  const onClickDelete = member => {
+    setMember(member)
     setDeleteModal(true)
   }
 
-  const handleDeleteUser = () => {
-    dispatch(onDeleteUser(member))
-    onPaginationPageChange(1)
-    setDeleteModal(false)
+  const handleDeleteMember = async () => {
+    try {
+      await memberService.deleteMember(member.id)
+      setDeleteModal(false)
+      setRefreshTable(prevRefresh => !prevRefresh)
+    } catch (error) {
+      console.error("Error deleting member:", error)
+    }
   }
 
   const handleUserClicks = () => {
@@ -401,7 +426,7 @@ const Member = props => {
     <React.Fragment>
       <DeleteModal
         show={deleteModal}
-        onDeleteClick={handleDeleteUser}
+        onDeleteClick={handleDeleteMember}
         onCloseClick={() => setDeleteModal(false)}
       />
 
@@ -416,7 +441,7 @@ const Member = props => {
                   {/*-----------------User List Table Start------------------*/}
                   <TableContainer
                     columns={columns}
-                    data={users}
+                    data={memberList}
                     isGlobalFilter={true}
                     isAddUserList={true}
                     handleUserClick={handleUserClicks}
@@ -538,25 +563,25 @@ const Member = props => {
                             <div className="mb-3">
                               <Label className="form-label">Image</Label>
                               <Input
-                                name="image"
-                                label="image"
+                                name="img"
+                                label="img"
                                 type="file"
                                 onChange={event => {
                                   validation.setFieldValue(
-                                    "image",
+                                    "img",
                                     event.currentTarget.files[0]
                                   )
                                 }}
                                 onBlur={validation.handleBlur}
                                 invalid={
-                                  validation.touched.image &&
-                                  validation.errors.image
+                                  validation.touched.img &&
+                                  validation.errors.img
                                 }
                               />
-                              {validation.touched.image &&
-                                validation.errors.image && (
+                              {validation.touched.img &&
+                                validation.errors.img && (
                                   <FormFeedback type="invalid">
-                                    {validation.errors.image}
+                                    {validation.errors.img}
                                   </FormFeedback>
                                 )}
                             </div>
@@ -590,41 +615,50 @@ const Member = props => {
 
                               <Select
                                 name="division"
-                                isMulti={false} // If division allows multiple selection, otherwise set it to false
-                                onChange={(selectedOptions) => {
+                                isMulti={false}
+                                onChange={selectedOptions => {
                                   validation.setFieldValue("division", selectedOptions);
+                                  validation.setFieldTouched("division", true); // Mark the field as touched when value changes
                                 }}
-
-                                options={divisions.AllDivisions && divisions.AllDivisions.map((division) => ({
-                                  value: division.id,
-                                  label: division.division_en,
-                                }))}
-
+                                options={
+                                  divisions.AllDivisions &&
+                                  divisions.AllDivisions.map(division => ({
+                                    value: division.id,
+                                    label: division.division_en,
+                                  }))
+                                }
+                                onBlur={() => validation.setFieldTouched("division", true)} // Mark the field as touched when it loses focus
+                                className={validation.touched.division && validation.errors.division ? 'is-invalid' : ''} // Apply 'is-invalid' class if there's an error
                               />
 
-                              {validation.touched.division &&
-                              validation.errors.division ? (
+                              {validation.touched.division && validation.errors.division && ( // Show error message if field has been touched and there's an error
                                 <FormFeedback type="invalid">
                                   {validation.errors.division}
                                 </FormFeedback>
-                              ) : null}
+                              )}
                             </div>
+
 
                             <div className="mb-3">
                               <Label className="form-label">Party</Label>
                               <Select
                                 name="party"
                                 isMulti={false}
-                                onChange={(selectedOptions) => {
-                                  validation.setFieldValue("party", selectedOptions);
+                                onChange={selectedOptions => {
+                                  validation.setFieldValue(
+                                    "party",
+                                    selectedOptions
+                                  )
                                 }}
-
-                                options={parties.AllParties && parties.AllParties.map((party) => ({
-                                  value: party.id,
-                                  label: party.party,
-                                }))}
-
+                                options={
+                                  parties.AllParties &&
+                                  parties.AllParties.map(party => ({
+                                    value: party.id,
+                                    label: party.party_en,
+                                  }))
+                                }
                               />
+
                               {validation.touched.party &&
                               validation.errors.party ? (
                                 <FormFeedback type="invalid">
@@ -639,8 +673,19 @@ const Member = props => {
                               <Select
                                 name="position"
                                 isMulti={true}
-                                onChange={() => {}}
-                                className="select2-selection"
+                                onChange={selectedOptions => {
+                                  validation.setFieldValue(
+                                    "position",
+                                    selectedOptions
+                                  )
+                                }}
+                                options={
+                                  positions.AllPositions &&
+                                  positions.AllPositions.map(position => ({
+                                    value: position.id,
+                                    label: position.position_en,
+                                  }))
+                                }
                               />
 
                               {validation.touched.position &&

@@ -26,6 +26,43 @@ const addMember = async (data) => {
   return result;
 };
 
+const getMember = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/member", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+    // console.log(result)
+  } catch (error) {
+    console.error("Error fetching member:", error);
+    result = error;
+  }
+  return result;
+};
+
+const deleteMember = async (memberId) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.delete(`/api/member/${memberId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error deleting member:", error);
+    result = error;
+  }
+  return result;
+};
+
 // --------------------------- Division -----------------------------
 const addDivision = async (data) => {
   let authToken = localStorage.getItem("auth-token");
@@ -251,6 +288,8 @@ const editPosition = async (updatePosition) => {
 const getSanctum = () => get("http://127.0.0.1:8000/sanctum/csrf-cookie")
 const MemberService = {
   addMember,
+  getMember,
+  deleteMember,
 
   addDivision,
   getDivision,
