@@ -8,7 +8,7 @@ const apiInstance = axios.create({
 
 // --------------------------- Member -----------------------------
 const addMember = async (data) => {
-  console.log("form data", data);
+  //console.log("form data", data);
   let authToken = localStorage.getItem("auth-token");
   let result;
   try {
@@ -20,7 +20,7 @@ const addMember = async (data) => {
     });
     result = response.data;
   } catch (error) {
-    console.error("Error adding member:", error);
+    //console.error("Error adding member:", error);
     result = error;
   }
   return result;

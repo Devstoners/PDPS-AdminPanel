@@ -141,32 +141,33 @@ const Member = props => {
       nameSi: (member && member.nameSi) || "",
       nameTa: (member && member.nameTa) || "",
       email: (member && member.email) || "",
-      // img: (member && member.img) || "",
-      // position: (member && member.position) || "",
+      img: (member && member.img) || "",
+      position: (member && member.position) || "",
       division: (member && member.division) || "",
       party: (member && member.party) || "",
       tel: (member && member.tel) || "",
     },
 
     validationSchema: Yup.object({
-      nameEn: Yup.string().required("Please Enter Name in English"),
-      nameSi: Yup.string().required("Please Enter Name in Sinhala"),
-      nameTa: Yup.string().required("Please Enter Name in Tamil"),
-      email: Yup.string().required("Please Enter Email"),
-      party: Yup.array().required("Please Select Party Name"),
-      division: Yup.array().required("Please Select Division"),
-      position: Yup.array().required("Please Select  Position"),
-
-      img: Yup.mixed()
-        .test(
-          "fileType",
-          "Invalid file type. Only JPG files are allowed.",
-          value => (value ? value && value.type === "image/jpeg" : true)
-        )
-        .test("fileSize", "File size too large. Max size is 5MB.", value =>
-          value ? value && value.size <= 5 * 1024 * 1024 : true
-        )
-        .required("Please upload an image file."),
+      // nameEn: Yup.string().required("Please Enter Name in English"),
+      // nameSi: Yup.string().required("Please Enter Name in Sinhala"),
+      // nameTa: Yup.string().required("Please Enter Name in Tamil"),
+      // email: Yup.string().required("Please Enter Email"),
+      // tel: Yup.string().required("Please Enter Telephone Number"),
+      // party: Yup.string().required("Please Select Party Name"),
+      // division: Yup.string().required("Please Select Division"),
+      // position: Yup.array().required("Please Select  Position"),
+      //
+      // img: Yup.mixed()
+      //   .test(
+      //     "fileType",
+      //     "Invalid file type. Only JPG files are allowed.",
+      //     value => (value ? value && value.type === "image/jpeg" : true)
+      //   )
+      //   .test("fileSize", "File size too large. Max size is 5MB.", value =>
+      //     value ? value && value.size <= 5 * 1024 * 1024 : true
+      //   )
+      //   .required("Please upload an image file."),
     }),
 
     onSubmit: async values => {
@@ -189,22 +190,32 @@ const Member = props => {
       } else {
         /* ----------------- Add user code ----------------- */
         try {
-          const response = await memberService.addMember(values)
-          if (response.status === 201) {
-            await Swal.fire("Member Added Successfully!", "", "success")
-            validation.resetForm()
-            toggle()
-            // history.push("/news")
+          const response = await memberService.addMember(values);
+          if (response && !response.error) {
+            console.log('Member Added Successfully!', response);
+            validation.resetForm();
+            toggle();
+            // history.push("/news");
           } else {
-            // Handle other status codes (e.g., 400 for duplicate email)
-            console.error("Error", response.statusText)
-            // Show appropriate error message to the user
-            await Swal.fire("Error", "Failed to add member error", "error")
+            console.error('Error:', response);
+            if (response && response.message) {
+              await Swal.fire('Error', response.message, 'error');
+            } else {
+              if (!response) {
+                await Swal.fire('Error', 'Failed to add member1', 'error');
+              }
+            }
           }
         } catch (error) {
-          console.error("Error", error)
-          await Swal.fire("Error", "Failed to add member", "error")
+          // Catch and handle any JavaScript errors or errors from the service
+          console.error('Error:', error);
+
+          // Show a generic error message to the user
+          await Swal.fire('Error', 'Failed to add member2', 'error');
         }
+
+
+
       }
       toggle()
     },
@@ -462,6 +473,7 @@ const Member = props => {
                           validation.handleSubmit()
                           return false
                         }}
+                        encType="multipart/form-data"
                       >
                         <Row form>
                           <Col xs={12}>
@@ -577,6 +589,10 @@ const Member = props => {
                                   validation.touched.img &&
                                   validation.errors.img
                                 }
+                                onClick={() => {
+                                  // Trigger the change event for the file input field
+                                  document.getElementsByName("img")[0].dispatchEvent(new Event("change", { bubbles: true }));
+                                }}
                               />
                               {validation.touched.img &&
                                 validation.errors.img && (
@@ -616,9 +632,9 @@ const Member = props => {
                               <Select
                                 name="division"
                                 isMulti={false}
-                                onChange={selectedOptions => {
-                                  validation.setFieldValue("division", selectedOptions);
-                                  validation.setFieldTouched("division", true); // Mark the field as touched when value changes
+                                onChange={selectedOption => {
+                                  validation.setFieldValue("division", selectedOption ? selectedOption.value : ""); // Set the field value to the selected option's value
+                                  validation.setFieldTouched("division", true); // Mark the field as touched
                                 }}
                                 options={
                                   divisions.AllDivisions &&
@@ -630,6 +646,7 @@ const Member = props => {
                                 onBlur={() => validation.setFieldTouched("division", true)} // Mark the field as touched when it loses focus
                                 className={validation.touched.division && validation.errors.division ? 'is-invalid' : ''} // Apply 'is-invalid' class if there's an error
                               />
+
 
                               {validation.touched.division && validation.errors.division && ( // Show error message if field has been touched and there's an error
                                 <FormFeedback type="invalid">
@@ -644,11 +661,9 @@ const Member = props => {
                               <Select
                                 name="party"
                                 isMulti={false}
-                                onChange={selectedOptions => {
-                                  validation.setFieldValue(
-                                    "party",
-                                    selectedOptions
-                                  )
+                                onChange={selectedOption => {
+                                  validation.setFieldValue("party", selectedOption ? selectedOption.value : "");
+                                  validation.setFieldTouched("party", true);
                                 }}
                                 options={
                                   parties.AllParties &&
@@ -657,14 +672,15 @@ const Member = props => {
                                     label: party.party_en,
                                   }))
                                 }
+                                onBlur={() => validation.setFieldTouched("party", true)}
+                                className={validation.touched.party && validation.errors.party ? 'is-invalid' : ''}
                               />
 
-                              {validation.touched.party &&
-                              validation.errors.party ? (
+                              {validation.touched.party && validation.errors.party && (
                                 <FormFeedback type="invalid">
                                   {validation.errors.party}
                                 </FormFeedback>
-                              ) : null}
+                              )}
                             </div>
 
                             <div className="mb-3">
