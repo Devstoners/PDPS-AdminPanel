@@ -30,6 +30,7 @@ const EditPositionModal = ({ show, onClickEdit, onCloseClick, position, onUpdate
         enableReinitialize: true,
         initialValues: {
             id: editedPosition.id,
+            // positionEn: (editedPosition && editedPosition.positionEn) || "",
             positionEn: editedPosition.positionEn,
             positionSi: editedPosition.positionSi,
             positionTa: editedPosition.positionTa,
@@ -47,17 +48,27 @@ const EditPositionModal = ({ show, onClickEdit, onCloseClick, position, onUpdate
                     positionSi: values.positionSi,
                     positionTa: values.positionTa,
                 };
-                await officerService.editPosition(updatePosition);
-                Swal.fire({
-                    icon: "success",
-                    title: "Success!",
-                    text: "Position updated successfully!",
-                });
-                validation.resetForm();
-                onCloseClick(); // Close the modal
-                onUpdateSuccess(); // Call the onUpdateSuccess function
+                const { result, errorMessage } = await officerService.editPosition(updatePosition);
+                if (errorMessage) {
+                    const formattedErrorMessage = errorMessage.replace(/\n/g, '<br>');
+                    Swal.fire({
+                        title: 'Error',
+                        html: formattedErrorMessage,
+                        icon: 'error',
+                        allowOutsideClick: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "Position updated successfully!",
+                    });
+                    // validation.resetForm();
+                    onCloseClick(); // Close the modal
+                    onUpdateSuccess(); // Call the onUpdateSuccess function
+                }
             } catch (error) {
-                console.error("Error editing position : ", error);
+                Swal.fire('Error', 'An error occurred while adding position', 'error');
             }
         },
     });
@@ -177,7 +188,6 @@ const EditPositionModal = ({ show, onClickEdit, onCloseClick, position, onUpdate
                                   <button
                                     type="submit"
                                     className="btn btn-success save-user"
-                                    onClick={onClickEdit}
                                   >
                                       Save
                                   </button>

@@ -71,6 +71,7 @@ const Position = () => {
       ),
       positionTa: Yup.string().required("Please Enter Position Name in Tamil"),
     }),
+
     onSubmit: async values => {
       try {
         const { result, errorMessage } = await officerService.addPosition(values);
@@ -151,7 +152,12 @@ const Position = () => {
       setDeleteModal(false)
       setRefreshTable(prevRefresh => !prevRefresh)
     } catch (error) {
-      console.error("Error deleting position:", error)
+      if (error.response && error.response.data && error.response.data.error) {
+        console.error("Error deleting position:", error.response.data.error);
+      } else {
+        // If the error structure is different or if there's no response message
+        console.error("Error deleting position:", error);
+      }
     }
   }
 
