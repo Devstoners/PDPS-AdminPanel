@@ -1,146 +1,219 @@
-import React, {useState} from "react"
+import React, { useState, useEffect } from "react";
 import {
     Col,
-    Form, FormFeedback,
+    Form,
+    FormFeedback,
     Input,
     Label,
     Modal,
     ModalBody,
     ModalHeader,
-    Row
-} from "reactstrap"
-import PropTypes from 'prop-types'
-// Formik validation
+    Row,
+} from "reactstrap";
+import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import Swal from "sweetalert2";
+import officerService from "../../../services/OfficerService";
 
-const EditPositionModal = ({ show, onClickEdit, onCloseClick }) => {
-    const [position, setPosition ]= useState();
-    // Form validation
+const EditPositionModal = ({ show, onClickEdit, onCloseClick, position, onUpdateSuccess }) => {
+    const [editedPosition, setEditedPosition] = useState({ id: "", positionEn: "", positionSi: "", positionTa: "" });
+
+    useEffect(() => {
+        if (show) {
+            // Set the editedPosition state with the position prop passed from the parent component
+            setEditedPosition(position);
+        }
+    }, [show, position]); // Include position prop in the dependency array
+
     const validation = useFormik({
-        // enableReinitialize : use this flag when initial values needs to be changed
         enableReinitialize: true,
-
         initialValues: {
-            posid: (position && position.posid) || "",
-            posname: (position && position.posname) || "",
+            id: editedPosition.id,
+            // positionEn: (editedPosition && editedPosition.positionEn) || "",
+            positionEn: editedPosition.positionEn,
+            positionSi: editedPosition.positionSi,
+            positionTa: editedPosition.positionTa,
         },
         validationSchema: Yup.object({
-            posid: Yup.string().required("Please Enter Position ID"),
-            posname: Yup.string().required("Please Enter Position Name"),
+            positionEn: Yup.string().required("Please Enter Position in English"),
+            positionSi: Yup.string().required("Please Enter Position in Sinhala"),
+            positionTa: Yup.string().required("Please Enter Position in Tamil"),
         }),
-        onSubmit: (values) => {
-            console.log("values", values);
-            validation.resetForm();
-        }
+        onSubmit: async values => {
+            try {
+                const updatePosition = {
+                    id: editedPosition.id,
+                    positionEn: values.positionEn,
+                    positionSi: values.positionSi,
+                    positionTa: values.positionTa,
+                };
+                const { result, errorMessage } = await officerService.editPosition(updatePosition);
+                if (errorMessage) {
+                    const formattedErrorMessage = errorMessage.replace(/\n/g, '<br>');
+                    Swal.fire({
+                        title: 'Error',
+                        html: formattedErrorMessage,
+                        icon: 'error',
+                        allowOutsideClick: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "Position updated successfully!",
+                    });
+                    // validation.resetForm();
+                    onCloseClick(); // Close the modal
+                    onUpdateSuccess(); // Call the onUpdateSuccess function
+                }
+            } catch (error) {
+                Swal.fire('Error', 'An error occurred while adding position', 'error');
+            }
+        },
     });
-    const [formValidation, setValidation] = useState({
-        posid: null,
-        posname: null,
-    });
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        const modifiedV = { ...formValidation };
-        var posid = document.getElementById("posid").value;
-        var divname = document.getElementById("posname").value;
+    return (
+      <Modal size="lg" isOpen={show} toggle={onCloseClick} centered={true}>
+          <div className="modal-content">
+              <ModalHeader>
+                  <div className="h4">Edit Position</div>
+                  <button
+                    type="button"
+                    onClick={onCloseClick}
+                    className="btn-close position-absolute end-0 top-0 m-3"
+                  ></button>
+              </ModalHeader>
+              <ModalBody className="px-4 py-5">
+                  <Form onSubmit={validation.handleSubmit}>
+                      <Row form>
+                          <Col xs={12}>
+                              <div className="mb-3">
+                                  <Label
+                                    htmlFor="positionEn"
+                                    className="col-form-label col-lg-6"
+                                  >
+                                      English
+                                  </Label>
+                                  <Input
+                                    id="positionEn"
+                                    name="positionEn"
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Position Name"
+                                    onChange={validation.handleChange}
+                                    onBlur={validation.handleBlur}
+                                    value={validation.values.positionEn || ""}
+                                    invalid={
+                                        validation.touched.positionEn &&
+                                        validation.errors.positionEn
+                                          ? true
+                                          : false
+                                    }
+                                  />
+                                  {validation.touched.positionEn &&
+                                  validation.errors.positionEn ? (
+                                    <FormFeedback type="invalid">
+                                        {validation.errors.positionEn}
+                                    </FormFeedback>
+                                  ) : null}
+                              </div>
 
+                              <div className="mb-3">
+                                  <Label
+                                    htmlFor="positionSi"
+                                    className="col-form-label col-lg-6"
+                                  >
+                                      Sinhala
+                                  </Label>
+                                  <Input
+                                    id="positionSi"
+                                    name="positionSi"
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="තනතුරේ නම"
+                                    onChange={validation.handleChange}
+                                    onBlur={validation.handleBlur}
+                                    value={validation.values.positionSi || ""}
+                                    invalid={
+                                        validation.touched.positionSi &&
+                                        validation.errors.positionSi
+                                          ? true
+                                          : false
+                                    }
+                                  />
+                                  {validation.touched.positionSi &&
+                                  validation.errors.positionSi ? (
+                                    <FormFeedback type="invalid">
+                                        {validation.errors.positionSi}
+                                    </FormFeedback>
+                                  ) : null}
+                              </div>
 
-        if (posid === "") {
-            modifiedV["posid"] = false;
-        } else {
-            modifiedV["posid"] = true;
-        }
-
-        if (posname === "") {
-            modifiedV["posname"] = false;
-        } else {
-            modifiedV["posname"] = true;
-        }
-        setValidation(modifiedV);
-    }
-
-
-
-
-  return (
-    <Modal size="sm" isOpen={show} toggle={onCloseClick}  centered={true}>
-      <div className="modal-content">
-      <ModalHeader>
-          <div className="h4">Edit Position</div>
-          <button type="button" onClick={onCloseClick} className="btn-close position-absolute end-0 top-0 m-3"></button>
-      </ModalHeader>
-        <ModalBody className="px-4 py-5">
-            <Form onSubmit={(e) => {
-                e.preventDefault();
-                validation.handleSubmit();
-                return false;
-            }}>
-            <Row form>
-                <Col xs={12}>
-                    <div className="mb-3">
-                        <Label htmlFor="posid" className="form-label">
-                            Position ID
-                        </Label>
-                        <Input
-                            id="posid"
-                            name="posid"
-                            type="number"
-                            className="form-control"
-                            placeholder="Position ID..."
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.posid || ""}
-                            invalid={
-                                validation.touched.posid && validation.errors.posid ? true : false
-                            }
-                        />
-                        {validation.touched.posid && validation.errors.posid ? (
-                            <FormFeedback type="invalid">{validation.errors.posid}</FormFeedback>
-                        ) : null}
-                    </div>
-
-                    <div className="mb-3">
-                      <Label htmlFor="posname" className="form-label">
-                        Position Name
-                      </Label>
-                      <Input
-                          id="posname"
-                          name="posname"
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter Position ..."
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.posname || ""}
-                          invalid={
-                              validation.touched.posname && validation.errors.posname ? true : false
-                          }
-                      />
-                        {validation.touched.posname && validation.errors.posname ? (
-                            <FormFeedback type="invalid">{validation.errors.posname}</FormFeedback>
-                        ) : null}
-                    </div>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <div className="d-flex gap-3">
-                      <button type="submit" className="btn btn-success save-user" onClick={onClickEdit}>Save</button>
-                      <button type="button" className="btn btn-secondary" onClick={onCloseClick}>Close</button>
-                    </div>
-                </Col>
-            </Row>
-            </Form>
-        </ModalBody>
-      </div>
-    </Modal>
-  )
-}
+                              <div className="mb-3">
+                                  <Label
+                                    htmlFor="positionTa"
+                                    className="col-form-label col-lg-6"
+                                  >
+                                      Tamil
+                                  </Label>
+                                  <Input
+                                    id="positionTa"
+                                    name="positionTa"
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="பதவி பெயர்"
+                                    onChange={validation.handleChange}
+                                    onBlur={validation.handleBlur}
+                                    value={validation.values.positionTa || ""}
+                                    invalid={
+                                        validation.touched.positionTa &&
+                                        validation.errors.positionTa
+                                          ? true
+                                          : false
+                                    }
+                                  />
+                                  {validation.touched.positionTa &&
+                                  validation.errors.positionTa ? (
+                                    <FormFeedback type="invalid">
+                                        {validation.errors.positionTa}
+                                    </FormFeedback>
+                                  ) : null}
+                              </div>
+                          </Col>
+                      </Row>
+                      <Row>
+                          <Col>
+                              <div className="d-flex gap-3">
+                                  <button
+                                    type="submit"
+                                    className="btn btn-success save-user"
+                                  >
+                                      Save
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={onCloseClick}
+                                  >
+                                      Close
+                                  </button>
+                              </div>
+                          </Col>
+                      </Row>
+                  </Form>
+              </ModalBody>
+          </div>
+      </Modal>
+    );
+};
 
 EditPositionModal.propTypes = {
-  onCloseClick: PropTypes.func,
-  onClickEdit: PropTypes.func,
-  show: PropTypes.any
-}
-export default EditPositionModal
+    onCloseClick: PropTypes.func,
+    onClickEdit: PropTypes.func,
+    show: PropTypes.any,
+    position: PropTypes.object,
+    onUpdateSuccess: PropTypes.func, // Add prop type for onUpdateSuccess
+};
+
+export default EditPositionModal;

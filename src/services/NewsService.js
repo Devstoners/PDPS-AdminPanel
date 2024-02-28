@@ -71,7 +71,7 @@ const deleteNews = async (newsId) => {
     });
     result = response.data;
   } catch (error) {
-    console.error("Error deleting news:", error);
+    console.error("Error Deleting News:", error);
     result = error;
   }
   return result;
@@ -83,7 +83,7 @@ const  newsCount = async () => {
   let result;
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response = await apiInstance.get("/api/newscount", {
+    const response = await apiInstance.get("/api/newsCount", {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
