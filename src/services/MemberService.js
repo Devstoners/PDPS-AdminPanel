@@ -8,9 +8,8 @@ const apiInstance = axios.create({
 
 // --------------------------- Member -----------------------------
 const addMember = async (data) => {
-  //console.log("form data", data);
-  let authToken = localStorage.getItem("auth-token");
-  let result;
+  console.log("form data", data)
+  const authToken = localStorage.getItem("auth-token");
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
     const response = await apiInstance.post("/api/member", data, {
@@ -18,12 +17,15 @@ const addMember = async (data) => {
         Authorization: `Bearer ${authToken}`,
       },
     });
-    result = response.data;
+    return { result: response.data, errorMessage: '' };
   } catch (error) {
-    //console.error("Error adding member:", error);
-    result = error;
+    let errorMessage = 'An error occurred while adding member';
+    if (error.response && error.response.data && error.response.data.errors) {
+      const validationErrors = error.response.data.errors;
+      errorMessage = Object.values(validationErrors).join('\n');
+    }
+    return { result: null, errorMessage };
   }
-  return result;
 };
 
 const getMember = async () => {

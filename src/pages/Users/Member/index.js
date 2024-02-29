@@ -48,6 +48,7 @@ import { isEmpty } from "lodash"
 import { useSelector, useDispatch } from "react-redux"
 import memberService from "../../../services/MemberService"
 import Swal from "sweetalert2"
+import officerService from "../../../services/OfficerService"
 
 const Member = props => {
   //meta title
@@ -149,25 +150,24 @@ const Member = props => {
     },
 
     validationSchema: Yup.object({
-      // nameEn: Yup.string().required("Please Enter Name in English"),
-      // nameSi: Yup.string().required("Please Enter Name in Sinhala"),
-      // nameTa: Yup.string().required("Please Enter Name in Tamil"),
-      // email: Yup.string().required("Please Enter Email"),
-      // tel: Yup.string().required("Please Enter Telephone Number"),
-      // party: Yup.string().required("Please Select Party Name"),
-      // division: Yup.string().required("Please Select Division"),
-      // position: Yup.array().required("Please Select  Position"),
-      //
-      // img: Yup.mixed()
-      //   .test(
-      //     "fileType",
-      //     "Invalid file type. Only JPG files are allowed.",
-      //     value => (value ? value && value.type === "image/jpeg" : true)
-      //   )
-      //   .test("fileSize", "File size too large. Max size is 5MB.", value =>
-      //     value ? value && value.size <= 5 * 1024 * 1024 : true
-      //   )
-      //   .required("Please upload an image file."),
+      nameEn: Yup.string().required("Please Enter Name in English"),
+      nameSi: Yup.string().required("Please Enter Name in Sinhala"),
+      nameTa: Yup.string().required("Please Enter Name in Tamil"),
+      email: Yup.string().email("Please enter a valid email").required("Please Enter Email"),
+      tel: Yup.string().matches(/^\d{10}$/, {message: "Please enter a valid 10-digit telephone number"}).required("Please Enter Telephone Number"),
+      party: Yup.number().required("Please Select Party Name"),
+      division: Yup.number().required("Please Select Division"),
+      position: Yup.array().required("Please Select Position"),
+      img: Yup.mixed()
+        .test(
+          "fileType",
+          "Invalid file type. Only JPG files are allowed.",
+          value => (value ? value && value.type === "image/jpeg" : true)
+        )
+        .test("fileSize", "File size too large. Max size is 5MB.", value =>
+          value ? value && value.size <= 5 * 1024 * 1024 : true
+        )
+        .required("Please upload an image file."),
     }),
 
     onSubmit: async values => {
@@ -188,34 +188,25 @@ const Member = props => {
         validation.resetForm()
         setIsEdit(false)
       } else {
-        /* ----------------- Add user code ----------------- */
+        /* ----------------- Add Member code ----------------- */
         try {
-          const response = await memberService.addMember(values);
-          if (response && !response.error) {
-            console.log('Member Added Successfully!', response);
-            validation.resetForm();
-            toggle();
-            // history.push("/news");
+          const { result, errorMessage } = await memberService.addMember(values);
+          if (errorMessage) {
+            const formattedErrorMessage = errorMessage.replace(/\n/g, '<br>');
+            Swal.fire({
+              title: 'Error',
+              html: formattedErrorMessage,
+              icon: 'error',
+              allowOutsideClick: false
+            });
           } else {
-            console.error('Error:', response);
-            if (response && response.message) {
-              await Swal.fire('Error', response.message, 'error');
-            } else {
-              if (!response) {
-                await Swal.fire('Error', 'Failed to add member1', 'error');
-              }
-            }
+            await Swal.fire("Member Added Successfully!", "", "success");
+            setRefreshTable(prevRefresh => !prevRefresh);
+            validation.resetForm();
           }
         } catch (error) {
-          // Catch and handle any JavaScript errors or errors from the service
-          console.error('Error:', error);
-
-          // Show a generic error message to the user
-          await Swal.fire('Error', 'Failed to add member2', 'error');
+          Swal.fire('Error', 'An error occurred while adding member', 'error');
         }
-
-
-
       }
       toggle()
     },
