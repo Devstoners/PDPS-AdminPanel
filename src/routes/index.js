@@ -10,6 +10,10 @@ import Complain from "../pages/Complain/index"
 import News from "../pages/News/index"
 import NewsCreate from "../pages/News/AddNews"
 
+//Downloads
+import Acts from "../pages/Download/Acts"
+import CommitteeReport from "../pages/Download/CommitteeReport"
+
 //Gallery
 import AddAlbum from "../pages/Gallery/AddAlbum"
 
@@ -50,6 +54,10 @@ const authProtectedRoutes = [
   //News
   { path: "/news-add", component: NewsCreate },
   { path: "/news", component: News },
+
+  //Download
+  { path: "/download-acts", component: Acts },
+  { path: "/download-committee-report", component: CommitteeReport },
 
   //Gallery
   { path: "/gallery", component: AddAlbum },

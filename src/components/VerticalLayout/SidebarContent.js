@@ -107,7 +107,6 @@ const SidebarContent = props => {
                 <span>{props.t("Complain")}</span>
               </Link>
             </li>
-
             <li>
               <Link to="/#" className="has-arrow ">
                 <i className="bx bx-news"></i>
@@ -119,6 +118,20 @@ const SidebarContent = props => {
                 </li>
                 <li>
                   <Link to="/news">{props.t("News")}</Link>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <Link to="/#" className="has-arrow ">
+                <i className="bx bx-download"></i>
+                <span>{props.t("Download")}</span>
+              </Link>
+              <ul className="sub-menu">
+                <li>
+                  <Link to="/download-acts">{props.t("Acts")}</Link>
+                </li>
+                <li>
+                  <Link to="/download-committee-report">{props.t("Committee Report")}</Link>
                 </li>
               </ul>
             </li>
@@ -176,27 +189,27 @@ const SidebarContent = props => {
               </ul>
             </li>
 
-            <li>
-              <Link to="/#" className="has-arrow ">
-                <i className="bx bx-user"></i>
-                <span>{props.t("Grama Niladari")}</span>
-              </Link>
-              <ul className="sub-menu">
-                <li>
-                  <Link to="/grama-division">{props.t("Division")}</Link>
-                </li>
-                <li>
-                  <Link to="/grama">{props.t("Grama Niladari List")}</Link>
-                </li>
-              </ul>
-            </li>
+            {/*<li>*/}
+            {/*  <Link to="/#" className="has-arrow ">*/}
+            {/*    <i className="bx bx-user"></i>*/}
+            {/*    <span>{props.t("Grama Niladari")}</span>*/}
+            {/*  </Link>*/}
+            {/*  <ul className="sub-menu">*/}
+            {/*    <li>*/}
+            {/*      <Link to="/grama-division">{props.t("Division")}</Link>*/}
+            {/*    </li>*/}
+            {/*    <li>*/}
+            {/*      <Link to="/grama">{props.t("Grama Niladari List")}</Link>*/}
+            {/*    </li>*/}
+            {/*  </ul>*/}
+            {/*</li>*/}
 
-            <li>
-              <Link to="/backup">
-                <i className="bx bx-data"></i>
-                <span>{props.t("Backup")}</span>
-              </Link>
-            </li>
+            {/*<li>*/}
+            {/*  <Link to="/backup">*/}
+            {/*    <i className="bx bx-data"></i>*/}
+            {/*    <span>{props.t("Backup")}</span>*/}
+            {/*  </Link>*/}
+            {/*</li>*/}
           </>
         )
 
