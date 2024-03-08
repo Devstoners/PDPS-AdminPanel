@@ -42,13 +42,20 @@ const EditSubjectModal = ({ show, onClickEdit, onCloseClick, subject, onUpdateSu
         }),
         onSubmit: async values => {
             try {
-                const updateSubject = {
-                    id: editedSubject.id,
-                    subjectEn: values.subjectEn,
-                    subjectSi: values.subjectSi,
-                    subjectTa: values.subjectTa,
-                };
-                const { result, errorMessage } = await officerService.editSubject(updateSubject);
+                // const updateSubject = {
+                //     id: editedSubject.id,
+                //     subjectEn: values.subjectEn,
+                //     subjectSi: values.subjectSi,
+                //     subjectTa: values.subjectTa,
+                // };
+                const  formData = new FormData();
+                formData.append('id', values.id)
+                formData.append('subjectEn', values.subjectEn)
+                formData.append('subjectSi', values.subjectSi)
+                formData.append('subjectTa', values.subjectTa)
+
+                // const { result, errorMessage } = await officerService.editSubject(updateSubject);
+                const { result, errorMessage } = await officerService.editSubject(formData);
                 if (errorMessage) {
                     const formattedErrorMessage = errorMessage.replace(/\n/g, '<br>');
                     Swal.fire({

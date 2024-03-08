@@ -24,6 +24,7 @@ import DeleteModal from "components/Common/DeleteModal"
 import downloadService from "../../services/DownloadService"
 import Swal from "sweetalert2"
 
+
 const Acts = props => {
   // Meta title
   document.title = "Admin | PDPS"
@@ -62,10 +63,11 @@ const Acts = props => {
     }
   }
 
-  // Validation
+  //---------------------------- Validation---------------------------------------------
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
+      id: (acts && acts.id) || "",
       actNumber: (acts && acts.actNumber) || "",
       actDate: (acts && acts.actDate) || "",
       nameEn: (acts && acts.nameEn) || "",
@@ -81,61 +83,79 @@ const Acts = props => {
       nameEn: Yup.string().required("Please Enter Name in English"),
       nameSi: Yup.string().required("Please Enter Name in Sinhala"),
       nameTa: Yup.string().required("Please Enter Name in Tamil"),
-      actFileEn: Yup.mixed()
-        .test(
-          "fileType",
-          "Invalid file type. Only PDF files are allowed.",
-          value => {
-            if (!value) return true // Skip validation if no file is selected
-            return value.type === "application/pdf"
-          }
-        )
-        .test("fileSize", "File size too large. Max size is 25MB.", value =>
-          value ? value && value.size <= 25 * 1024 * 1024 : true
-        ),
-      actFileSi: Yup.mixed()
-        .test(
-          "fileType",
-          "Invalid file type. Only PDF files are allowed.",
-          value => {
-            if (!value) return true // Skip validation if no file is selected
-            return value.type === "application/pdf"
-          }
-        )
-        .test("fileSize", "File size too large. Max size is 25MB.", value =>
-          value ? value && value.size <= 25 * 1024 * 1024 : true
-        ),
-      actFileTa: Yup.mixed()
-        .test(
-          "fileType",
-          "Invalid file type. Only PDF files are allowed.",
-          value => {
-            if (!value) return true // Skip validation if no file is selected
-            return value.type === "application/pdf"
-          }
-        )
-        .test("fileSize", "File size too large. Max size is 25MB.", value =>
-          value ? value && value.size <= 25 * 1024 * 1024 : true
-        ),
+      // actFileEn: Yup.mixed().test(
+      //   "fileType",
+      //   "Invalid file type. Only PDF files are allowed.",
+      //   value => {
+      //     // Skip validation if no new file is selected
+      //     if (!value || !(value instanceof File)) return true;
+      //     return value.type === "application/pdf";
+      //   }
+      // ),
+      // actFileSi: Yup.mixed().test(
+      //   "fileType",
+      //   "Invalid file type. Only PDF files are allowed.",
+      //   value => {
+      //     // Skip validation if no new file is selected
+      //     if (!value || !(value instanceof File)) return true;
+      //     return value.type === "application/pdf";
+      //   }
+      // ),
+      // actFileTa: Yup.mixed().test(
+      //   "fileType",
+      //   "Invalid file type. Only PDF files are allowed.",
+      //   value => {
+      //     // Skip validation if no new file is selected
+      //     if (!value || !(value instanceof File)) return true;
+      //     return value.type === "application/pdf";
+      //   }
+      // ),
+
+
     }),
 
     onSubmit: async values => {
+      //---------------edit---------------------------------------
       if (isEdit) {
-        const updateActs = {
-          id: acts.id,
-          actNumber: values.actNumber,
-          actDate: values.actDate,
-          nameEn: values.nameEn,
-          nameSi: values.nameSi,
-          nameTa: values.nameTa,
-          actFileEn: values.actFileEn,
-          actFileSi: values.actFileSi,
-          actFileTa: values.actFileTa,
+        try{
+          const formData = new FormData()
+          formData.append("id", values.id)
+          formData.append("actNumber", values.actNumber)
+          formData.append("actDate", values.actDate)
+          formData.append("nameEn", values.nameEn)
+          formData.append("nameSi", values.nameSi)
+          formData.append("nameTa", values.nameTa)
+          // formData.append("actFileEn", values.actFileEn)
+          // formData.append("actFileSi", values.actFileSi)
+          // formData.append("actFileTa", values.actFileTa)
+          // formData.append("actFileEn", values.actFileEn)
+          // formData.append("actFileSi", values.actFileSi)
+          // formData.append("actFileTa", values.actFileTa)
+          // formData.forEach((value, key) => {
+          //   console.log(key, value);
+          // });
+
+          const { result, errorMessage } = await downloadService.editActs(
+            formData
+          )
+          if (errorMessage) {
+            const formattedErrorMessage = errorMessage.replace(/\n/g, "<br>")
+            Swal.fire({
+              title: "Error",
+              html: formattedErrorMessage,
+              icon: "error",
+              allowOutsideClick: false,
+            })
+          } else {
+            await Swal.fire("Acts Edited Successfully!", "", "success")
+            setRefreshTable(prevRefresh => !prevRefresh)
+            validation.resetForm()
+          }
+        } catch (error) {
+          Swal.fire("Error", "An error occurred while editing acts", "error")
         }
-        // Implement update logic here
-        validation.resetForm()
-        setIsEdit(false)
       } else {
+        //---------------add---------------------------------------
         try {
           const formData = new FormData()
           formData.append("actNumber", values.actNumber)
@@ -146,7 +166,7 @@ const Acts = props => {
           formData.append("actFileEn", values.actFileEn)
           formData.append("actFileSi", values.actFileSi)
           formData.append("actFileTa", values.actFileTa)
-          // Call service to add member
+          // console.log(formData)
           const { result, errorMessage } = await downloadService.addActs(
             formData
           )
