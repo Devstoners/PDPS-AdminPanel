@@ -144,11 +144,12 @@ const addSubject = async (data) => {
   }
 };
 
-const editSubject = async (updateSubject) => {
+const editSubject = async (formData) => {
   const authToken = localStorage.getItem("auth-token");
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response =  await apiInstance.put(`/api/officerSubject/${updateSubject.id}`, updateSubject, {
+    const id = formData.get('id');
+    const response =  await apiInstance.put(`/api/officerSubject/${id}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

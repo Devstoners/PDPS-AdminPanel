@@ -143,7 +143,7 @@ const Member = props => {
       nameTa: (member && member.nameTa) || "",
       email: (member && member.email) || "",
       img: (member && member.img) || "",
-      position: (member && member.position) || "",
+      position: (member && member.position) || [],
       division: (member && member.division) || "",
       party: (member && member.party) || "",
       tel: (member && member.tel) || "",
@@ -175,22 +175,37 @@ const Member = props => {
         /* ----------------- Edit user code ----------------- */
       }
       if (isEdit) {
-        const updateUser = {
-          id: member.id,
-          name: values.name,
-          email: values.email,
-          party: values.party,
-          division: values.division,
-          position: values.position,
-          status: values.status,
-        }
-        dispatch(onUpdateUser(updateUser))
-        validation.resetForm()
-        setIsEdit(false)
+        // const updateUser = {
+        //   id: member.id,
+        //   name: values.name,
+        //   email: values.email,
+        //   party: values.party,
+        //   division: values.division,
+        //   position: values.position,
+        //   status: values.status,
+        // }
+        // dispatch(onUpdateUser(updateUser))
+        // validation.resetForm()
+        // setIsEdit(false)
       } else {
         /* ----------------- Add Member code ----------------- */
         try {
-          const { result, errorMessage } = await memberService.addMember(values);
+          const formData = new FormData()
+          formData.append('nameEn',values.nameEn)
+          formData.append('nameSi',values.nameSi)
+          formData.append('nameTa',values.nameTa)
+          formData.append('email',values.email)
+          formData.append('tel',values.tel)
+          formData.append('party',values.party)
+          formData.append('division',values.division)
+          // formData.append('position',values.position)
+          values.position.forEach(pos => {
+            formData.append('position[]', pos.value);
+            // console.log("position values are: ", pos.value)
+          });
+
+          formData.append('img',values.img)
+          const { result, errorMessage } = await memberService.addMember(formData);
           if (errorMessage) {
             const formattedErrorMessage = errorMessage.replace(/\n/g, '<br>');
             Swal.fire({
@@ -678,7 +693,7 @@ const Member = props => {
                               <Label className="form-label">Position</Label>
 
                               <Select
-                                name="position"
+                                name="position[]"
                                 isMulti={true}
                                 onChange={selectedOptions => {
                                   validation.setFieldValue(
