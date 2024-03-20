@@ -30,20 +30,17 @@ const addActs = async data => {
   }
 }
 
-const editActs = async data => {
+const editActs = async formData => {
   const authToken = localStorage.getItem("auth-token")
-
-  // Create a custom Axios instance with FormData and set headers
-
   try {
-    // Fetch CSRF token
-    await apiInstance.get("/sanctum/csrf-cookie")
-    let actId = data.get("id")
-    console.log("xyz", actId)
-    // Make PUT request with custom Axios instance
-    const response = await apiInstance.put(`/api/downloadActs/${actId}`, data)
-
-    return { result: response.data, errorMessage: "" }
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const id = formData.get('id');
+    const response =  await apiInstance.post(`/api/downloadActs/${id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    return { result: response.data, errorMessage: '' };
   } catch (error) {
     let errorMessage = "An error occurred while editing acts"
     if (error.response && error.response.data && error.response.data.errors) {
@@ -53,36 +50,6 @@ const editActs = async data => {
     return { result: null, errorMessage }
   }
 }
-
-// const editActs = async (formData) => {
-//   let authToken = localStorage.getItem("auth-token");
-//   let actId;
-//   formData.forEach((value, key) => {
-//     if (key === "id") {
-//       actId = value;
-//     }
-//   });
-//   let result
-//   try {
-//     await apiInstance.get("/sanctum/csrf-cookie");
-//     const response = await apiInstance.put(`/api/downloadActs/${actId}`, formData, {
-//       headers: {
-//         Authorization: `Bearer ${authToken}`,
-//       },
-//     });
-//     result = response.data
-//   } catch (error) {
-//     let errorMessage = 'An error occurred while editing acts';
-//
-//     // Check if there are specific validation errors
-//     if (error.response && error.response.data && error.response.data.errors) {
-//       const validationErrors = error.response.data.errors;
-//       errorMessage = Object.values(validationErrors).join('\n');
-//     }
-//
-//     return { result: null, errorMessage };
-//   }
-// };
 
 const getActs = async () => {
   let authToken = localStorage.getItem("auth-token")
@@ -122,6 +89,87 @@ const deleteActs = async actsId => {
   }
 }
 
+// --------------------------- Report -----------------------------
+const addReport = async data => {
+  // console.log("form data : ", data)
+  const authToken = localStorage.getItem("auth-token")
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie")
+    const response = await apiInstance.post("/api/downloadReport", data, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
+    return { result: response.data, errorMessage: "" }
+  } catch (error) {
+    let errorMessage = "An error occurred while adding report"
+    if (error.response && error.response.data && error.response.data.errors) {
+      const validationErrors = error.response.data.errors
+      errorMessage = Object.values(validationErrors).join("\n")
+    }
+    return { result: null, errorMessage }
+  }
+}
+
+const editReport = async formData => {
+  const authToken = localStorage.getItem("auth-token")
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const id = formData.get('id');
+    const response =  await apiInstance.post(`/api/downloadReport/${id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    return { result: response.data, errorMessage: '' };
+  } catch (error) {
+    let errorMessage = "An error occurred while editing report"
+    if (error.response && error.response.data && error.response.data.errors) {
+      const validationErrors = error.response.data.errors
+      errorMessage = Object.values(validationErrors).join("\n")
+    }
+    return { result: null, errorMessage }
+  }
+}
+
+const getReport = async () => {
+  let authToken = localStorage.getItem("auth-token")
+  let result
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie")
+    const response = await apiInstance.get("/api/downloadReport", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
+    result = response.data
+  } catch (error) {
+    console.error("Error fetching report:", error)
+    result = error
+  }
+  return result
+}
+
+const deleteReport = async reportId => {
+  let authToken = localStorage.getItem("auth-token")
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie")
+    const response = await apiInstance.delete(`/api/downloadReport/${reportId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
+    // result = response.data;
+  } catch (error) {
+    let errorMessage = "An error occurred while deleting report"
+    if (error.response && error.response.data && error.response.data.errors) {
+      const validationErrors = error.response.data.errors
+      errorMessage = Object.values(validationErrors).join("\n")
+    }
+    throw new Error(errorMessage)
+  }
+}
+
 const getSanctum = () => get("http://127.0.0.1:8000/sanctum/csrf-cookie")
 const DownloadService = {
   getSanctum,
@@ -130,6 +178,11 @@ const DownloadService = {
   getActs,
   deleteActs,
   editActs,
+
+  addReport,
+  getReport,
+  deleteReport,
+  editReport,
 }
 
 export default DownloadService

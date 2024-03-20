@@ -53,7 +53,7 @@ const EditSubjectModal = ({ show, onClickEdit, onCloseClick, subject, onUpdateSu
                 formData.append('subjectEn', values.subjectEn)
                 formData.append('subjectSi', values.subjectSi)
                 formData.append('subjectTa', values.subjectTa)
-
+                formData.append('_method', 'PUT');
                 // const { result, errorMessage } = await officerService.editSubject(updateSubject);
                 const { result, errorMessage } = await officerService.editSubject(formData);
                 if (errorMessage) {

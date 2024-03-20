@@ -149,7 +149,7 @@ const editSubject = async (formData) => {
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
     const id = formData.get('id');
-    const response =  await apiInstance.put(`/api/officerSubject/${id}`, formData, {
+    const response =  await apiInstance.post(`/api/officerSubject/${id}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

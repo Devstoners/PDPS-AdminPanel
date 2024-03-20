@@ -74,7 +74,11 @@ const Subject = () => {
 
     onSubmit: async values => {
       try {
-        const { result, errorMessage } = await officerService.addSubject(values);
+        const  formData = new FormData();
+        formData.append('subjectEn', values.subjectEn)
+        formData.append('subjectSi', values.subjectSi)
+        formData.append('subjectTa', values.subjectTa)
+        const { result, errorMessage } = await officerService.addSubject(formData);
         if (errorMessage) {
           const formattedErrorMessage = errorMessage.replace(/\n/g, '<br>');
           Swal.fire({

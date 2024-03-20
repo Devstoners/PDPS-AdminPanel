@@ -23,6 +23,7 @@ import { useFormik } from "formik"
 import DeleteModal from "components/Common/DeleteModal"
 import downloadService from "../../services/DownloadService"
 import Swal from "sweetalert2"
+import Breadcrumbs from "../../components/Common/Breadcrumb"
 
 
 const Acts = props => {
@@ -83,33 +84,33 @@ const Acts = props => {
       nameEn: Yup.string().required("Please Enter Name in English"),
       nameSi: Yup.string().required("Please Enter Name in Sinhala"),
       nameTa: Yup.string().required("Please Enter Name in Tamil"),
-      // actFileEn: Yup.mixed().test(
-      //   "fileType",
-      //   "Invalid file type. Only PDF files are allowed.",
-      //   value => {
-      //     // Skip validation if no new file is selected
-      //     if (!value || !(value instanceof File)) return true;
-      //     return value.type === "application/pdf";
-      //   }
-      // ),
-      // actFileSi: Yup.mixed().test(
-      //   "fileType",
-      //   "Invalid file type. Only PDF files are allowed.",
-      //   value => {
-      //     // Skip validation if no new file is selected
-      //     if (!value || !(value instanceof File)) return true;
-      //     return value.type === "application/pdf";
-      //   }
-      // ),
-      // actFileTa: Yup.mixed().test(
-      //   "fileType",
-      //   "Invalid file type. Only PDF files are allowed.",
-      //   value => {
-      //     // Skip validation if no new file is selected
-      //     if (!value || !(value instanceof File)) return true;
-      //     return value.type === "application/pdf";
-      //   }
-      // ),
+      actFileEn: Yup.mixed().test(
+        "fileType",
+        "Invalid file type. Only PDF files are allowed.",
+        value => {
+          // Skip validation if no new file is selected
+          if (!value || !(value instanceof File)) return true;
+          return value.type === "application/pdf";
+        }
+      ),
+      actFileSi: Yup.mixed().test(
+        "fileType",
+        "Invalid file type. Only PDF files are allowed.",
+        value => {
+          // Skip validation if no new file is selected
+          if (!value || !(value instanceof File)) return true;
+          return value.type === "application/pdf";
+        }
+      ),
+      actFileTa: Yup.mixed().test(
+        "fileType",
+        "Invalid file type. Only PDF files are allowed.",
+        value => {
+          // Skip validation if no new file is selected
+          if (!value || !(value instanceof File)) return true;
+          return value.type === "application/pdf";
+        }
+      ),
 
 
     }),
@@ -118,6 +119,9 @@ const Acts = props => {
       //---------------edit---------------------------------------
       if (isEdit) {
         try{
+          // formData.forEach((value, key) => {
+          //   console.log(key, value);
+          // });
           const formData = new FormData()
           formData.append("id", values.id)
           formData.append("actNumber", values.actNumber)
@@ -125,16 +129,10 @@ const Acts = props => {
           formData.append("nameEn", values.nameEn)
           formData.append("nameSi", values.nameSi)
           formData.append("nameTa", values.nameTa)
-          // formData.append("actFileEn", values.actFileEn)
-          // formData.append("actFileSi", values.actFileSi)
-          // formData.append("actFileTa", values.actFileTa)
-          // formData.append("actFileEn", values.actFileEn)
-          // formData.append("actFileSi", values.actFileSi)
-          // formData.append("actFileTa", values.actFileTa)
-          // formData.forEach((value, key) => {
-          //   console.log(key, value);
-          // });
-
+          formData.append("actFileEn", values.actFileEn)
+          formData.append("actFileSi", values.actFileSi)
+          formData.append("actFileTa", values.actFileTa)
+          formData.append('_method', 'PUT');
           const { result, errorMessage } = await downloadService.editActs(
             formData
           )
@@ -321,6 +319,7 @@ const Acts = props => {
 
       <div className="page-content">
         <Container fluid>
+          <Breadcrumbs title="Download" breadcrumbItem="Acts" />
           <Row>
             <Col lg="12">
               <Card>
