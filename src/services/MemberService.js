@@ -8,7 +8,10 @@ const apiInstance = axios.create({
 
 // --------------------------- Member -----------------------------
 const addMember = async (data) => {
-  console.log("form data", data)
+
+  for (const entry of data.entries()) {
+    console.log(entry[0], entry[1]);
+  }
   const authToken = localStorage.getItem("auth-token");
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
