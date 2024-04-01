@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react"
 import { withRouter, Link } from "react-router-dom"
-import { isEmpty } from "lodash"
 import {
   Card,
   CardBody,
@@ -25,7 +24,6 @@ import Swal from "sweetalert2"
 import Breadcrumbs from "../../../components/Common/Breadcrumb"
 import memberService from "../../../services/MemberService"
 import Select from "react-select"
-import avatar3 from "../../../assets/images/users/avatar-3.jpg"
 
 const Member = props => {
   document.title = "Admin | PDPS"
