@@ -9,9 +9,9 @@ const apiInstance = axios.create({
 // --------------------------- Member -----------------------------
 const addMember = async (data) => {
 
-  for (const entry of data.entries()) {
-    console.log(entry[0], entry[1]);
-  }
+  // for (const entry of data.entries()) {
+  //   console.log(entry[0], entry[1]);
+  // }
   const authToken = localStorage.getItem("auth-token");
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
@@ -50,6 +50,34 @@ const getMember = async () => {
   return result;
 };
 
+
+const editMember = async (formData) => {
+  for (const entry of formData.entries()) {
+    console.log(entry[0], entry[1]);
+  }
+  const id = formData.get('id');
+  console.log('Form Data ID:', id);
+  const authToken = localStorage.getItem("auth-token");
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.post(`/api/member/${id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    return { result: response.data, errorMessage: '' };
+  } catch (error) {
+    let errorMessage = 'An error occurred while editing member';
+    if (error.response && error.response.data && error.response.data.errors) {
+      const validationErrors = error.response.data.errors;
+      errorMessage = Object.values(validationErrors).join('\n');
+    }
+    return { result: null, errorMessage };
+  }
+};
+
+
 const deleteMember = async (memberId) => {
   let authToken = localStorage.getItem("auth-token");
   let result;
@@ -74,7 +102,7 @@ const addDivision = async (data) => {
   let result;
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response = await apiInstance.post("/api/memberDivision", data, {
+    const response = await apiInstance.post("/api/division", data, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -92,7 +120,7 @@ const getDivision = async () => {
   let result;
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response = await apiInstance.get("/api/memberDivision", {
+    const response = await apiInstance.get("/api/division", {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -110,7 +138,7 @@ const deleteDivision = async (divisionId) => {
   let result;
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response =  await apiInstance.delete(`/api/memberDivision/${divisionId}`, {
+    const response =  await apiInstance.delete(`/api/division/${divisionId}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -124,21 +152,24 @@ const deleteDivision = async (divisionId) => {
 };
 
 const editDivision = async (updateDivision) => {
-  console.log(updateDivision)
+  // console.log(updateDivision)
+  // console.log(updateDivision.id)
+  
   let authToken = localStorage.getItem("auth-token");
   let result
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response =  await apiInstance.put(`/api/memberParty/${updateDivision.id}`, updateDivision, {
+    const response =  await apiInstance.put(`/api/division/${updateDivision.id}`, updateDivision, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
     });
     result = response.data
   } catch (error) {
-    console.error("Error editing party:", error);
-    result = error
+    console.error("Error editing division:", error.response ? error.response.data : error);
+    result = error.response ? error.response.data : error;
   }
+  
   return result
 };
 
@@ -179,15 +210,15 @@ const getParty = async () => {
   return result;
 };
 
-const deleteParty = async (divisionId) => {
+const deleteParty = async (partyId) => {
   let authToken = localStorage.getItem("auth-token");
   let result;
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response =  await apiInstance.delete(`/api/memberParty/${divisionId}`, {
+    const response =  await apiInstance.delete(`/api/memberParty/${partyId}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
-      },
+      }
     });
     result = response.data;
   } catch (error) {
@@ -290,11 +321,31 @@ const editPosition = async (updatePosition) => {
   return result
 };
 
+const  countMember = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/countMember", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error fetching member count:", error);
+    result = error;
+  }
+  return result;
+};
+
 const getSanctum = () => get("http://127.0.0.1:8000/sanctum/csrf-cookie")
 const MemberService = {
   addMember,
   getMember,
+  editMember,
   deleteMember,
+  countMember,
 
   addDivision,
   getDivision,

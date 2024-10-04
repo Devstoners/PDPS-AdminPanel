@@ -1,46 +1,117 @@
 import { get, post } from "../helpers/api_helper"
 import axios from "axios"
-import Swal from "sweetalert2"
-import { useState } from "react"
-
 const apiInstance = axios.create({
   baseURL: "http://127.0.0.1:8000",
   withCredentials: true,
 });
 
+// --------------------------- Officer -----------------------------
+const addOfficer = async (data) => {
+
+  for (const entry of data.entries()) {
+    console.log(entry[0], entry[1]);
+  }
+  const authToken = localStorage.getItem("auth-token");
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.post("/api/officer", data, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    return { result: response.data, errorMessage: '' };
+  } catch (error) {
+    let errorMessage = 'An error occurred while adding officer';
+    if (error.response && error.response.data && error.response.data.errors) {
+      const validationErrors = error.response.data.errors;
+      errorMessage = Object.values(validationErrors).join('\n');
+    }
+    return { result: null, errorMessage };
+  }
+};
+
+const getOfficer = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/officer", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+    // console.log(result)
+  } catch (error) {
+    console.error("Error fetching officer:", error);
+    result = error;
+  }
+  return result;
+};
 
 
-const getOffers = async () => {
-    let responseData
-    await localStorage.getItem("auth-token")
-    const response = await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async res => {
-        await axios
-            .get("http://127.0.0.1:8000/api/officer", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
-                },
-            })
-            .then(resp => {
-                console.log(resp, "response")
-                responseData = resp
-            })
-    })
-    return responseData
-}
+const editOfficer = async (formData) => {
+  for (const entry of formData.entries()) {
+    console.log(entry[0], entry[1]);
+  }
+  const id = formData.get('id');
+  console.log('Form Data ID:', id);
+  const authToken = localStorage.getItem("auth-token");
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.post(`/api/officer/${id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
 
-const subject = async (data) => {
-  //console.log("test4")
-  let some
-  const response = await get("http://127.0.0.1:8000/sanctum/csrf-cookie").then(async response => {
-    await axios.post("http://127.0.0.1:8000/api/addSubject", data).then(res => {
-      console.log(res)
-      some = res
-    }).catch(error => {
-      some = error
-    })
-  })
-  return some
-}
+    return { result: response.data, errorMessage: '' };
+  } catch (error) {
+    let errorMessage = 'An error occurred while editing officer';
+    if (error.response && error.response.data && error.response.data.errors) {
+      const validationErrors = error.response.data.errors;
+      errorMessage = Object.values(validationErrors).join('\n');
+    }
+    return { result: null, errorMessage };
+  }
+};
+
+
+const deleteOfficer = async (officerId) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response =  await apiInstance.delete(`/api/officer/${officerId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error deleting officer:", error);
+    result = error;
+  }
+  return result;
+};
+
+const  countOfficer = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/countOfficer", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error fetching officer count:", error);
+    result = error;
+  }
+  return result;
+};
 
 // --------------------------- Position -----------------------------
 const addPosition = async (data) => {
@@ -63,11 +134,13 @@ const addPosition = async (data) => {
   }
 };
 
-const editPosition = async (updatePosition) => {
+const editPosition = async (formData) => {
   const authToken = localStorage.getItem("auth-token");
+  // console.log("This is the id bro : ", formData.id)
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response =  await apiInstance.put(`/api/officerPosition/${updatePosition.id}`, updatePosition, {
+    const id = formData.get('id');
+    const response =  await apiInstance.post(`/api/officerPosition/${id}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -95,6 +168,7 @@ const getPosition = async () => {
       },
     });
     result = response.data;
+    // console.log(result)
   } catch (error) {
     console.error("Error fetching position:", error);
     result = error;
@@ -123,9 +197,12 @@ const deletePosition = async (positionId) => {
 };
 
 
-// --------------------------- Subject -----------------------------
-const addSubject = async (data) => {
+// --------------------------- Duty -----------------------------
+const addDuty = async (data) => {
   const authToken = localStorage.getItem("auth-token");
+  // for (const entry of data.entries()) {
+  //   console.log(entry[0], entry[1]);
+  // }
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
     const response = await apiInstance.post("/api/officerSubject", data, {
@@ -144,7 +221,7 @@ const addSubject = async (data) => {
   }
 };
 
-const editSubject = async (formData) => {
+const editDuty = async (formData) => {
   const authToken = localStorage.getItem("auth-token");
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
@@ -166,7 +243,7 @@ const editSubject = async (formData) => {
 };
 
 
-const getSubject = async () => {
+const getDuty = async () => {
   let authToken = localStorage.getItem("auth-token");
   let result;
   try {
@@ -177,6 +254,7 @@ const getSubject = async () => {
       },
     });
     result = response.data;
+    // console.log(result)
   } catch (error) {
     console.error("Error fetching subject:", error);
     result = error;
@@ -184,7 +262,7 @@ const getSubject = async () => {
   return result;
 };
 
-const deleteSubject = async (subjectId) => {
+const deleteDuty = async (subjectId) => {
   let authToken = localStorage.getItem("auth-token");
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
@@ -204,21 +282,135 @@ const deleteSubject = async (subjectId) => {
   }
 };
 
+// --------------------------- Service -----------------------------
+const getService = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/officerServices", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+    // console.log(result)
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    result = error;
+  }
+  return result;
+};
+
+// --------------------------- Grade -----------------------------
+const getGradesByService = async (serviceId) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get(`/api/officerGrades/${serviceId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+    // console.log("Grades from API:", result);
+  } catch (error) {
+    console.error("Error fetching grades:", error);
+    result = error;
+  }
+  return result;
+};
+
+// --------------------------- Position -----------------------------
+const getPositionsByGrade = async (serviceId) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get(`/api/officerPositions/${serviceId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+    // console.log(result)
+  } catch (error) {
+    console.error("Error fetching positions:", error);
+    result = error;
+  }
+  return result;
+};
+
+// --------------------------- Duty -----------------------------
+const getDutiesByPosition = async (positionId) => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get(`/api/officerDuties/${positionId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+    // console.log(result)
+  } catch (error) {
+    console.error("Error fetching duties:", error);
+    result = error;
+  }
+  return result;
+};
+
+// --------------------------- Level -----------------------------
+const getLevel = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/officerLevels", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+    // console.log(result)
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    result = error;
+  }
+  return result;
+};
+
+
 const getSanctum = () => get("http://127.0.0.1:8000/sanctum/csrf-cookie")
 const OfficerService = {
   getSanctum,
+  
+  getOfficer,
+  addOfficer,
+  editOfficer,
+  deleteOfficer,
+  countOfficer,
 
-  addSubject,
-  getSubject,
-  deleteSubject,
-  editSubject,
+  addDuty,
+  getDuty,
+  deleteDuty,
+  editDuty,
 
   addPosition,
   getPosition,
   deletePosition,
   editPosition,
 
-  getOffers,
+  getService,
+  getGradesByService,
+  getPositionsByGrade,
+  getDutiesByPosition,
+  getLevel,
+
+
+
 }
 
 

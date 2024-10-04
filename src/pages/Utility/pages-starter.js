@@ -1,14 +1,8 @@
 import React from "react";
 import { Container } from "reactstrap";
-
-//Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-
 const PagesStarter = () => {
-
-    //meta title
-    document.title="Stater Page | Skote - React Admin & Dashboard Template";
-
+    document.title="PDPS";
   return (
     <React.Fragment>
       <div className="page-content">
@@ -20,5 +14,4 @@ const PagesStarter = () => {
     </React.Fragment>
   )
 }
-
 export default PagesStarter;

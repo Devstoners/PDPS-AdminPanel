@@ -170,6 +170,24 @@ const deleteReport = async reportId => {
   }
 }
 
+
+const  downloadCount = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/countDownload", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error fetching download count:", error);
+    result = error;
+  }
+  return result;
+};
 const getSanctum = () => get("http://127.0.0.1:8000/sanctum/csrf-cookie")
 const DownloadService = {
   getSanctum,
@@ -183,6 +201,8 @@ const DownloadService = {
   getReport,
   deleteReport,
   editReport,
+
+  downloadCount,
 }
 
 export default DownloadService

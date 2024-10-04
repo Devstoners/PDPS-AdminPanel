@@ -95,7 +95,7 @@ const Member = props => {
       const mappedData = allMemberArray.map((item, index) => {
         // Extract images property from the item
         const images = item.images || []
-
+        // console.log(item,'itemitem');
         return {
           displayId: allMemberArray.length - index,
           id: item.id,
@@ -107,7 +107,7 @@ const Member = props => {
           tel: item.tel,
           img: item.image,
           // position: item.memberPositions.id,
-          division: item.member_division,
+          division: item.division,
           party: item.member_party,
           position: item.member_positions,
           status: item.user.status,
@@ -133,13 +133,15 @@ const Member = props => {
       nameSi: (member && member.nameSi) || "",
       nameTa: (member && member.nameTa) || "",
       email: (member && member.email) || "",
-      img: (member && member.img) || null,
+      img: null,
       tel: (member && member.tel) || "",
       division: (member && member.division && member.division.id) || "",
       party: (member && member.party && member.party.id) || "",
       position:
         (member && member.position && member.position.map(pos => pos.id)) || [],
-      status: (member && member.status) || "",
+      // status: (member && member.status) || "",
+      // status: statusEdit.value,
+      status: (statusEdit && statusEdit.value) || 0,
     },
     validationSchema: Yup.object({
       nameEn: Yup.string().required("Please Enter Name in English"),
@@ -149,13 +151,23 @@ const Member = props => {
         .email("Please enter a valid email")
         .required("Please Enter Email"),
       img: Yup.mixed()
+        .nullable()
+        .notRequired()
         .test(
           "fileType",
           "Invalid file type. Only JPG files are allowed.",
-          value => (value ? value && value.type === "image/jpeg" : true)
+          value => {
+            if (!value || typeof value === 'string') return true; // Allow empty or existing image URL
+            return value && value.type === "image/jpeg";
+          }
         )
-        .test("fileSize", "File size too large. Max size is 5MB.", value =>
-          value ? value && value.size <= 5 * 1024 * 1024 : true
+        .test(
+          "fileSize",
+          "File size too large. Max size is 5MB.",
+          value => {
+            if (!value || typeof value === 'string') return true; // Allow empty or existing image URL
+            return value && value.size <= 5 * 1024 * 1024;
+          }
         ),
       tel: Yup.string()
         .matches(/^\d{10}$/, {
@@ -167,7 +179,8 @@ const Member = props => {
       position: Yup.array().min(1, "Please select at least one position"),
     }),
     onSubmit: handleSubmit,
-  })
+  });
+
 
   // Submit handler
   async function handleSubmit(values) {
@@ -185,11 +198,13 @@ const Member = props => {
       values.position.forEach(pos => {
         formData.append("position[]", pos)
       })
+      formData.append("status", values.status)
       // console.log(formData.getAll("position"));
       let result
       if (isEdit) {
-        formData.append("id", values.id)
-        formData.append("status", values.status)
+        formData.append("id", member.id)
+        // console.log(member.id)
+  
         formData.append("_method", "PUT")
         result = await memberService.editMember(formData)
       } else {
@@ -230,6 +245,7 @@ const Member = props => {
 
   // Handle edit click
   const handleUserClick = arg => {
+  // console.log(arg)
     const memberData = arg
 
     const existingImage = memberData.img
@@ -241,7 +257,8 @@ const Member = props => {
       : null
 
     const selectedDivision = {
-      value: memberData.division.id,
+
+      value: memberData?.division.id,
       label: memberData.division.division_en,
     }
 
@@ -274,6 +291,7 @@ const Member = props => {
       position: memberData.position,
       status: memberData.status,
     })
+    // console.log(memberData.id, 'test')
     setDivisionEdit(selectedDivision)
     setPartyEdit(selectedParty)
     setPositionEdit(selectedPositions)
@@ -328,6 +346,7 @@ const Member = props => {
   // Function to handle status change in the form
   const handleStatusChange = selectedOption => {
     setStatusEdit(selectedOption)
+    
   }
 
   // Delete member
@@ -353,7 +372,7 @@ const Member = props => {
     setDivisionEdit(null)
     setPartyEdit(null)
     setPositionEdit(null)
-    setStatusEdit(null)
+    setStatusEdit({ value: 0, label: "Unregistered" })
 
     setModal(true)
     setMember(null)
@@ -647,6 +666,7 @@ const Member = props => {
                                     ? true
                                     : false
                                 }
+                                disabled={isEdit}
                               />
                               {validation.touched.email &&
                               validation.errors.email ? (
@@ -693,16 +713,16 @@ const Member = props => {
                                 onBlur={validation.handleBlur}
                                 invalid={
                                   validation.touched.img &&
-                                  validation.errors.img
+                                  !!validation.errors.img
                                 }
-                                onClick={() => {
-                                  // Trigger the change event for the file input field
-                                  document
-                                    .getElementsByName("img")[0]
-                                    .dispatchEvent(
-                                      new Event("change", { bubbles: true })
-                                    )
-                                }}
+                                // onClick={() => {
+                                //   // Trigger the change event for the file input field
+                                //   document
+                                //     .getElementsByName("img")[0]
+                                //     .dispatchEvent(
+                                //       new Event("change", { bubbles: true })
+                                //     )
+                                // }}
                               />
                               {validation.touched.img &&
                                 validation.errors.img && (

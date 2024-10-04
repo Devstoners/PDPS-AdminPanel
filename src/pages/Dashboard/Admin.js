@@ -4,9 +4,7 @@ import { Container, Row } from "reactstrap"
 //import component
 import CardUser from "./CardUser"
 import Settings from "./Settings"
-import Posts from "./Posts"
-import Comments from "./Comments"
-import TapVisitors from "./TapVisitors"
+
 
 
 //Import Breadcrumb

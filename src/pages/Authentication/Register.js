@@ -79,7 +79,7 @@ const Register = props => {
           title: "Oops...",
           text: "Something went wrong!"
         });
-        dispatch(apiError("Somethingkjhhiu went wrong!"));
+        dispatch(apiError("Something went wrong!"));
       }
     }
   })

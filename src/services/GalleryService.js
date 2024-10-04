@@ -89,6 +89,24 @@ const deleteGallery = async galleryId => {
   }
 }
 
+const  galleryCount = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/countGallery", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error fetching gallery count:", error);
+    result = error;
+  }
+  return result;
+};
+
 const getSanctum = () => get("http://127.0.0.1:8000/sanctum/csrf-cookie")
 const GalleryService = {
   getSanctum,
@@ -97,6 +115,8 @@ const GalleryService = {
   getGallery,
   deleteGallery,
   editGallery,
+  galleryCount,
+  
 }
 
 export default GalleryService

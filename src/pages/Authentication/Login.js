@@ -12,20 +12,16 @@ import { withRouter, Link,useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
-//Social Media Imports
-import { GoogleLogin } from "react-google-login";
-// import TwitterLogin from "react-twitter-auth"
-import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
+
 
 // actions
 import { loginUser, socialLogin } from "../../store/actions";
 
 // import images
-import profile from "assets/images/profile-img.png";
 import logo from "assets/images/pdps-logo.png";
 
 //Import config
-import { facebook, google } from "../../config";
+
 import loginService from "../../services/LoginService";
 import Swal from "sweetalert2";
 
@@ -54,17 +50,10 @@ const Login = props => {
       const data = await loginService.login(values);
      // console.log(data,'error New New');
       if (data.status === 201) {
-       // console.log(data.data.user,'shit1');
+       console.log(data.data.user,'test user');
         if (data.data.user.roles[0].name !== "customer") {
-          //console.log(data,'shit2');
           await localStorage.setItem("auth-token", data.data.token)
           await localStorage.setItem("user-role", data.data.user.roles[0].name)
-          // window.location.href = '/dashboard';
-          // await Swal.fire(
-          //     "Login Successfully!",
-          //     "",
-          //     "success"
-          // )
           history.push("/dashboard")
         }else{
           await Swal.fire({
@@ -80,9 +69,6 @@ const Login = props => {
           text: "Wrong Username or Password!"
         })
       }
-
-
-
     }
   });
 
@@ -91,7 +77,6 @@ const Login = props => {
   }));
 
   const signIn = (res, type) => {
-    console.log('fucku');
     if (type === "google" && res) {
       const postData = {
         name: res.profileObj.name,
@@ -111,18 +96,7 @@ const Login = props => {
     }
   };
 
-  //handleGoogleLoginResponse
-  const googleResponse = response => {
-    signIn(response, "google");
-  };
 
-  //handleTwitterLoginResponse
-  // const twitterResponse = e => {}
-
-  //handleFacebookLoginResponse
-  const facebookResponse = response => {
-    signIn(response, "facebook");
-  };
 
   return (
     <React.Fragment>
@@ -172,7 +146,7 @@ const Login = props => {
                       }}
                     >
                       {error ? <Alert color="danger">{error}</Alert> : null}
-
+                      {/*<input type="hidden" name="_token" value="{{ csrf_token() }}" />*/}
                       <div className="mb-3">
                         <Label className="form-label">Email</Label>
                         <Input

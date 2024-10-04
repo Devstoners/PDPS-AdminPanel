@@ -4,11 +4,17 @@ import { Card, CardBody, Col, Row } from "reactstrap";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../components/Common/ChartsDynamicColor";
 import NewsService  from "../../services/NewsService";
+import ProjectService from "services/ProjectService";
+import GalleryService from "services/GalleryService";
 
 const CardUser = ({ dataColors }) => {
   const apexCardUserChartColors = getChartColorsArray(dataColors);
-  const [visibleNewsCount, setVisibleNewsCount] = useState(0);
 
+  const [visibleNewsCount, setVisibleNewsCount] = useState(0);
+  const [projectCount, setProjectCount] = useState(0);
+  const [galleryCount, setGalleryCount] = useState(0);
+
+  //News count
   useEffect(() => {
     let isMounted = true; // Flag to track component mount status
 
@@ -30,15 +36,72 @@ const CardUser = ({ dataColors }) => {
         }
       }
     };
-
     fetchData(); // Invoke the fetchData function
-
     // Cleanup function to update the mounted status
     return () => {
       isMounted = false;
     };
   }, []);
 
+ //Count projects
+ useEffect(() => {
+  let isMounted = true; // Flag to track component mount status
+
+  const fetchData = async () => {
+    try {
+      const data = await ProjectService.countProject();
+      const countProject = data.count;
+
+      // Check if the component is still mounted before updating state
+      if (isMounted) {
+        setProjectCount(countProject);
+      }
+    } catch (error) {
+      console.error("Error fetching project count:", error);
+
+      // Handle the error, e.g., set a default value for memberCount
+      if (isMounted) {
+        setProjectCount("0");
+      }
+    }
+  };
+
+  fetchData(); // Invoke the fetchData function
+
+  // Cleanup function to update the mounted status
+  return () => {
+    isMounted = false;
+  };
+}, []);
+
+  //Gallery count
+  useEffect(() => {
+    let isMounted = true; // Flag to track component mount status
+
+    const fetchData = async () => {
+      try {
+        const data = await GalleryService.galleryCount();
+        const galleryCount = data.count;
+
+        // Check if the component is still mounted before updating state
+        if (isMounted) {
+          setGalleryCount(galleryCount);
+        }
+      } catch (error) {
+        console.error("Error fetching gallery count:", error);
+
+        // Handle the error, e.g., set a default value for visibleNewsCount
+        if (isMounted) {
+          setGalleryCount("0");
+        }
+      }
+    };
+    fetchData(); // Invoke the fetchData function
+    // Cleanup function to update the mounted status
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
 
   const series = [
@@ -139,7 +202,7 @@ const CardUser = ({ dataColors }) => {
                 <div className="d-flex flex-wrap">
                   <div className="me-3">
                     <p className="text-muted mb-2">Gallery</p>
-                    <h5 className="mb-0">86</h5>
+                    <h5 className="mb-0">{galleryCount}</h5>
                   </div>
 
                   <div className="avatar-sm ms-auto">
@@ -157,7 +220,7 @@ const CardUser = ({ dataColors }) => {
                 <div className="d-flex flex-wrap">
                   <div className="me-3">
                     <p className="text-muted mb-2">Projects</p>
-                    <h5 className="mb-0">35</h5>
+                    <h5 className="mb-0">{projectCount}</h5>
                   </div>
 
                   <div className="avatar-sm ms-auto">

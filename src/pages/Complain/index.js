@@ -1,466 +1,472 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
-import { withRouter, Link } from "react-router-dom";
-import TableContainer from "../../components/Common/TableContainer";
-
-
-
-import Select from "react-select";
+import React, { useEffect, useState, useMemo } from "react"
+import { withRouter, Link } from "react-router-dom"
 import {
-    Card,
-    CardBody,
-    Col,
-    Container,
-    Row,
-    Modal,
-    ModalHeader,
-    ModalBody,
-    Label,
-    FormFeedback,
-    UncontrolledTooltip,
-    Input,
-    Form, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Badge,
-} from "reactstrap";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-
-//Import Breadcrumb
-import Breadcrumbs from "components/Common/Breadcrumb";
-import DeleteModal from "components/Common/DeleteModal";
-
-
-import {
-    getComplain as onGetComplain,
-    addNewComplain as onAddNewComplain,
-    updateComplain as onUpdateComplain,
-    deleteComplain as onDeleteComplain,
-} from "store/complains/actions";
-
-import { isEmpty } from "lodash";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
-import ComplainDetailsModal from "./ComplainDetailsModal";
-import ComplainService from "../../services/ComplainService"
+  Card,
+  CardBody,
+  Col,
+  Container,
+  Row,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Label,
+  FormFeedback,
+  UncontrolledTooltip,
+  Input,
+  Form,
+  Button,
+} from "reactstrap"
+import * as Yup from "yup"
+import { useFormik } from "formik"
+import TableContainer from "../../components/Common/TableContainer"
+import DeleteModal from "components/Common/DeleteModal"
+import Swal from "sweetalert2"
+import Breadcrumbs from "../../components/Common/Breadcrumb"
+import ComplainService from "services/ComplainService"
+import ComplainDetailsModal from "./ComplainDetailsModal"
+import Select from "react-select"
 
 const Complain = props => {
+  document.title = "Admin | PDPS"
 
-    //meta title
-    document.title="Admin | PDPS";
+  const [modal, setModal] = useState(false)
+  const [modal1, setModal1] = useState(false)
+  const [isEdit, setIsEdit] = useState(false)
 
-    const dispatch = useDispatch();
-    const [complain, setComplain] = useState();
-    const [modal1, setModal1] = useState(false);
-    const [startDate, setstartDate] = useState(new Date())
-    const [endDate, setendDate] = useState(new Date())
-    const [news, setNews] = useState([]);
+  const [complainList, setComplainList] = useState([])
+  const [complain, setComplain] = useState(null)
+  // State variables
+  const [refreshTable, setRefreshTable] = useState(false)
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Ensure that getAllNews is the correct method in your newsService
-                const fetchedData = await ComplainService.getAllcomplain();
-                console.log(fetchedData.data)
-                const mappedData = fetchedData.data.map(item => ({
-                    id: item.id,
-                    topic: item.complain, // Add a check for existence
-                    cdate: item.complain_date,
-                    status: item.status,
-                }));
-                console.log(mappedData);
-                setNews(mappedData);
-            } catch (error) {
-                console.error('Error fetching news:', error);
-            }
-        };
+  const baseUrl = "http://127.0.0.1:8000"
+  const fetchData = async () => {
+    try {
+      const fetchedData = await ComplainService.getAllcomplain()
+      const allComplainArray = fetchedData.data.AllComplains || []
+      const mappedData = allComplainArray.map((item, index) => {
+        // Truncate the complain text if it exceeds 150 characters
+        const truncatedComplain =
+          item.complain.length > 150
+            ? item.complain.substring(0, 150) + "..."
+            : item.complain
 
-        fetchData();
-    }, []);
+        // Format the created_at date
+        const dbdateTime = new Date(item.created_at)
+        const dbdate = dbdateTime.toISOString().split("T")[0]
 
-    const startDateChange = date => {
-        setstartDate(date)
+        // Get the action from the related complain_action object (if exists)
+        const action = item.complain_action ? item.complain_action.action : null
+
+        return {
+          displayId: allComplainArray.length - index,
+          id: item.id,
+          complainTextShort: truncatedComplain,
+          complainText: item.complain,
+          //View data in the table
+          cname: item.cname,
+          tel: item.tele,
+          cdate: dbdate,
+          image1: item.img1,
+          image2: item.img2,
+          image3: item.img3,
+          action: action,
+        }
+      })
+
+      setComplainList(mappedData)
+    } catch (error) {
+      console.error("Error fetching complain data:", error)
     }
+  }
 
-    const endDateChange = date => {
-        setendDate(date)
+  // Refresh the table
+  useEffect(() => {
+    fetchData()
+  }, [refreshTable])
+  const validation = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      complainText: (complain && complain.complainText) || "",
+
+      // Form validation
+      // cname: (complain && complain.cname) || "",
+      // tel: (complain && complain.tel) || "",
+      // image1: null,
+      action: (complain && complain.action) || "",
+    },
+    validationSchema: Yup.object({
+      // image2: null,
+      // image3: null,
+      // complainText: Yup.string()
+      //   .required("Please Enter Complain")
+      //   .max(800, "Complain should not exceed 800 characters"),
+      // cname: Yup.string().nullable(),
+      // tel: Yup.string()
+      //   .nullable()
+      //   .matches(/^\d{10}$/, {
+      //     message: "Please enter a valid 10-digit telephone number",
+      //     excludeEmptyString: true, // Only apply validation if the string is non-empty
+      //   }),
+      // image1: Yup.mixed()
+      //   .nullable()
+      //   .notRequired()
+      //   .test(
+      //     "fileType",
+      //     "Invalid file type. Only JPG files are allowed.",
+      //     value => {
+      //       if (!value || typeof value === "string") return true
+      //       return value && value.type === "image/jpeg"
+      //     }
+      //   )
+      //   .test("fileSize", "File size too large. Max size is 8MB.", value => {
+      //     if (!value || typeof value === "string") return true
+      //     return value && value.size <= 8 * 1024 * 1024
+      //   }),
+
+      // image2: Yup.mixed()
+      //   .nullable()
+      //   .notRequired()
+      //   .test(
+      //     "fileType",
+      //     "Invalid file type. Only JPG files are allowed.",
+      //     value => {
+      //       if (!value || typeof value === "string") return true
+      //       return value && value.type === "image/jpeg"
+      //     }
+      //   )
+      //   .test("fileSize", "File size too large. Max size is 8MB.", value => {
+      //     if (!value || typeof value === "string") return true
+      //     return value && value.size <= 8 * 1024 * 1024
+      //   }),
+
+      // image3: Yup.mixed()
+      //   .nullable()
+      //   .notRequired()
+      //   .test(
+      //     "fileType",
+      //     "Invalid file type. Only JPG files are allowed.",
+      //     value => {
+      //       if (!value || typeof value === "string") return true
+      //       return value && value.type === "image/jpeg"
+      //     }
+      //   )
+      //   .test("fileSize", "File size too large. Max size is 8MB.", value => {
+      //     if (!value || typeof value === "string") return true
+      action: Yup.string()
+        .required("Please Enter action")
+        .max(500, "Action should not exceed 500 characters"),
+    }),
+    onSubmit: handleSubmit,
+  })
+  //     return value && value.size <= 8 * 1024 * 1024
+  //   }),
+
+  // Submit handler
+  async function handleSubmit(values) {
+    // console.log("Form values before submission:", values);
+    try {
+      const formData = new FormData()
+      let result
+      formData.append("action", values.action)
+      formData.append("id", complain.id)
+      if (isEdit) {
+        formData.append("_method", "PUT")
+        result = await ComplainService.editAction(formData)
+      } else {
+        result = await ComplainService.addAction(formData)
+      }
+
+      if (result.errorMessage) {
+        const formattedErrorMessage = result.errorMessage.replace(/\n/g, "<br>")
+        Swal.fire({
+          title: "Error",
+          html: formattedErrorMessage,
+          icon: "error",
+          allowOutsideClick: false,
+        })
+      } else {
+        await Swal.fire(
+          isEdit
+            ? "Complain Action Edited Successfully!"
+            : "Complain Action Added Successfully!",
+          "",
+          "success"
+        )
+        setRefreshTable(prevRefresh => !prevRefresh)
+        validation.resetForm()
+      }
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        `An error occurred while ${
+          isEdit ? "editing" : "adding"
+        } complain action`,
+        "error"
+      )
     }
-    {/* ----------------- Validation ----------------- */}
-    const validation = useFormik({
-        // enableReinitialize : use this flag when initial values needs to be changed
-        enableReinitialize: true,
+    toggle()
+  }
 
-        initialValues: {
-            topic: ( complain &&  complain.topic) || "",
-            status: ( complain &&  complain.status) || "",
-            topict: ( complain &&  complain.topict) || "",
-        },
-        validationSchema: Yup.object({
-            topic: Yup.string().required("Please Enter Complain topic in English"),
-            status: Yup.string().required("Please Enter Complain topic in Sinhala"),
-            topict: Yup.string().required("Please Enter Complain topic in Tamil"),
-        }),
-        onSubmit: (values) => {
-            console.log("values", values);
-            validation.resetForm();
-        }
-    });
+  // Modal toggle function
+  const toggle = () => {
+    setModal(!modal)
+  }
 
-    const [formValidation, setValidation] = useState({
-        topic: null,
-        status: null,
-        topict: null,
-    });
+  // Handle edit click
+  const handleEditClick = complain => {
+    setComplain({
+      id: complain.id,
+      complainText: complain.complainText, // Set complainText for display
+      action: complain.action || "", // Set existing action for editing
+    })
+    setIsEdit(true) // Toggle edit mode
+    toggle() // Open the modal
+  }
 
+  // Delete complain
+  const [deleteModal, setDeleteModal] = useState(false)
 
+  const onClickDelete = complain => {
+    setComplain(complain)
+    setDeleteModal(true)
+  }
 
-    onSubmit: values => {
-            {/* ----------------- Edit complain code ----------------- */}
-            if (isEdit) {
-                const updateComplain = {
-                    id: complain.id,
-                    topic: values.topic,
-                    status: values.status,
-                    topict: values.topict,
-                    startDate: values.startDate,
-                    dateend: values.dateend,
-                };
-                dispatch(onUpdateComplain(updateComplain));
-                validation.resetForm();
-                setIsEdit(false);
+  const handleDelete = async () => {
+    try {
+      await ComplainService.deleteComplain(complain.id)
+      setDeleteModal(false)
+      setRefreshTable(prevRefresh => !prevRefresh)
+    } catch (error) {
+      console.error("Error deleting complain:", error)
+    }
+  }
 
-            } else {
-                {/* ----------------- Add complain code ----------------- */}
-                const newComplain = {
-                    id: Math.floor(Math.random() * (30 - 20)) + 20,
-                    topic: values["topic"],
-                    status: values["status"],
-                    topict: values["topict"],
-                    startDate: values["startDate"],
-                    dateend: values["dateend"],
-                };
-                dispatch(onAddNewComplain(newComplain));
-                validation.resetForm();
-            }
-            toggle();
-        },
+  //Model1 toggle
+  const toggleViewModal1 = () => setModal1(!modal1)
 
-    {/* ----------------- Validation/Edit/Add complain code ends ----------------- */}
+  //Handle Add click
+  const handleAddClick = complain => {
+    setComplain({
+      id: complain.id,
+      complainText: complain.complainText, // Set complainText for display
+      action: "", // Empty action for new feedback
+    })
+    setIsEdit(false) // Toggle add mode
+    toggle() // Open the modal
+    validation.resetForm() // Reset form values
+  }
 
+  // Columns configuration
+  const columns = useMemo(
+    // Add new complain
 
+    () => [
+      {
+        Header: "ID",
+        accessor: "displayId",
+        disableFilters: true,
+      },
 
-    const [complainList, setComplainList] = useState([]);
-    const [modal, setModal] = useState(false);
-    const toggleViewModal = () => setModal1(!modal1);
-    const [isEdit, setIsEdit] = useState(false);
+      {
+        Header: "Complain",
+        accessor: "complainTextShort",
+        disableFilters: true,
+      },
 
-    const columns = useMemo(
+      {
+        Header: "Date",
+        accessor: "cdate",
+        disableFilters: true,
+      },
 
-        () => [
-            {
-                Header: "#",
-                accessor: "id",
-                disableFilters: true,
-            },
+      {
+        Header: "Action",
+        disableFilters: true,
+        Cell: ({ row }) => {
+          const { action } = row.original // Access the action from the row data
 
-            {
-                Header: "Complain",
-                accessor: "topic",
-                disableFilters: true,
+          return (
+            <div className="d-flex gap-3">
+              <Link
+                to="#"
+                className="text-success"
+                onClick={() => toggleViewModal1(row.original)}
+              >
+                <i
+                  className="mdi mdi-open-in-new font-size-18"
+                  id="viewtooltip"
+                />
+                <UncontrolledTooltip placement="top" target="viewtooltip">
+                  View More
+                </UncontrolledTooltip>
+              </Link>
 
-            },
+              {action ? ( // Check if action exists
+                <Link
+                  to="#"
+                  className="text-success"
+                  onClick={() => handleEditClick(row.original)} // Call edit function
+                >
+                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    Edit Action
+                  </UncontrolledTooltip>
+                </Link>
+              ) : (
+                <Link
+                  to="#"
+                  className="text-primary"
+                  onClick={() => handleAddClick(row.original)} // Call add function
+                >
+                  <i
+                    className="mdi mdi-plus-circle font-size-18"
+                    id="addtooltip"
+                  />
+                  <UncontrolledTooltip placement="top" target="addtooltip">
+                    Add Action
+                  </UncontrolledTooltip>
+                </Link>
+              )}
 
-            {
-                Header: "Action",
-                accessor: "cdate",
-                disableFilters: true,
-            },
-
-            {
-                Header: 'Details',
-                accessor: 'view',
-                disableFilters: true,
-                Cell: () => {
-                    return (
-                        <Button
-                            type="button"
-                            color="primary"
-                            className="btn-sm btn-rounded"
-                            onClick={toggleViewModal}
-                        >
-                            View Details
-                        </Button>);
-                }
-            },
-
-            {
-                Header: 'Add Action',
-                Cell: cellProps => {
-                    return (
-                      <div className="d-flex justify-content-center gap-3">
-                          {/*-------------------Edit button--------------------- */}
-                          <Link
-                            to="#"
-                            className="text-success"
-                            onClick={() => {
-                                const complainData = cellProps.row.original;
-                                handleComplainClick(complainData);
-                            }}
-                          >
-                              <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                              <UncontrolledTooltip placement="top" target="edittooltip">
-                                  Edit
-                              </UncontrolledTooltip>
-                          </Link>
-                      </div>
-                    );
-                }
-            },
-
-            {
-                Header: 'Delete Complain',
-                Cell: cellProps => {
-                    return (
-                        <div className="d-flex justify-content-center gap-3">
-                            <Link
-                                to="#"
-                                className="text-danger"
-                                onClick={() => {
-                                    const complainData = cellProps.row.original;
-                                    onClickDelete(complainData);
-                                }}
-                            >
-                                <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
-                                <UncontrolledTooltip placement="top" target="deletetooltip">
-                                    Delete
-                                </UncontrolledTooltip>
-                            </Link>
-                        </div>
-                    );
-                }
-            },
-        ],
-        []
-    );
-
-    
-    useEffect(() => {
-        if (complain && !complain.length) {
-            dispatch(onGetComplain());
-            setIsEdit(false);
-        }
-    }, [dispatch, complain]);
-
-    useEffect(() => {
-        setComplain(complain);
-        setIsEdit(false);
-    }, [complain]);
-
-    useEffect(() => {
-        if (!isEmpty(complain) && !!isEdit) {
-            setComplain(complain);
-            setIsEdit(false);
-        }
-    }, [complain]);
-
-    const toggle = () => {
-        setModal(!modal);
-    };
-
-    const handleComplainClick = arg => {
-        const complain = arg;
-
-        setComplain({
-            id: complain.id,
-            topic: complain.topic,
-            status: complain.status,
-            topict: complain.topict,
-            startDate: complain.startDate,
-            endDate: complain.endDate,
-            order: complain.order,
-        });
-        setIsEdit(true);
-
-        toggle();
-    };
-
-    //Pagination
-    var node = useRef();
-    const onPaginationPageChange = page => {
-        if (
-            node &&
-            node.current &&
-            node.current.props &&
-            node.current.props.pagination &&
-            node.current.props.pagination.options
-        ) {
-            node.current.props.pagination.options.onPageChange(page);
-        }
-    };
-
-    //delete complain
-    const [deleteModal, setDeleteModal] = useState(false);
-
-    const onClickDelete = complain => {
-        setComplain(complain);
-        setDeleteModal(true);
-    };
-
-    const handleDeleteComplain = () => {
-        dispatch(onDeleteComplain(complain));
-        onPaginationPageChange(1);
-        setDeleteModal(false);
-    };
-
-    const handleComplainClicks = () => {
-        setComplainList("");
-        setIsEdit(false);
-        toggle();
-    };
-
-    const keyField = "id";
-
-    return (
-        <React.Fragment>
-            <ComplainDetailsModal isOpen={modal1} toggle={toggleViewModal} />
-            <DeleteModal
-                show={deleteModal}
-                onDeleteClick={handleDeleteComplain}
-                onCloseClick={() => setDeleteModal(false)}
-            />
-
-            {/*------------------ Render Breadcrumbs----------------- */}
-            <div className="page-content">
-                <Container fluid>
-                    <Breadcrumbs title="Complain" breadcrumbItem="Complain" />
-                    <Row>
-                        <Col lg="12">
-                            <Card>
-                                <CardBody>
-                                    {/*-----------------User List Table Start------------------*/}
-                                    <TableContainer
-                                        columns={columns}
-                                        data={news}
-                                        isGlobalFilter={true}
-                                        handleComplainClick={handleComplainClicks}
-                                        customPageSize={10}
-                                        className=""
-                                    />
-                                    {/*-----------------User List Table End------------------*/}
-
-                                    {/*-----------------Add & Edit complain form Start------------------*/}
-                                    <Modal isOpen={modal} toggle={toggle}>
-                                        <ModalHeader toggle={toggle} tag="h4">
-                                           Add Action
-                                        </ModalHeader>
-                                        <ModalBody>
-                                            <Form
-                                                onSubmit={e => {
-                                                    e.preventDefault();
-                                                    validation.handleSubmit();
-                                                    return false;
-                                                }}
-                                            >
-                                                <Row form>
-                                                    <Col xs={12}>
-                                                        <div className="mb-3">
-                                                            <Label
-                                                                htmlFor="topic"
-                                                                className="form-label"
-                                                            >
-                                                                Complain - Topic
-                                                            </Label>
-                                                            <Input
-                                                                id="topic"
-                                                                name="topic"
-                                                                type="textarea"
-                                                                className="form-control"
-                                                                disabled={true}
-                                                                onChange={validation.handleChange}
-                                                                onBlur={validation.handleBlur}
-                                                                value={validation.values.topic || ""}
-                                                                invalid={
-                                                                    validation.touched.topic && validation.errors.topic ? true : false
-                                                                }
-                                                            />
-                                                            {validation.touched.topic && validation.errors.topic ? (
-                                                                <FormFeedback type="invalid">{validation.errors.topic}</FormFeedback>
-                                                            ) : null}
-                                                        </div>
-
-                                                        <div className="mb-3">
-                                                            <Label className="form-label">Status</Label>
-                                                            <Input
-                                                                name="status"
-                                                                type="select"
-                                                                className="form-select"
-                                                                onChange={validation.handleChange}
-                                                                onBlur={validation.handleBlur}
-                                                                value={
-                                                                    validation.values.status || ""
-                                                                }
-                                                            >
-                                                                <option>No Action</option>
-                                                                <option>In Progress</option>
-                                                                <option>Completed</option>
-                                                            </Input>
-                                                            {validation.touched.status && validation.errors.status ? (
-                                                                <FormFeedback type="invalid">{validation.errors.status}</FormFeedback>
-                                                            ) : null}
-                                                        </div>
-
-                                                        <div className="mb-3">
-                                                            <Label
-                                                                htmlFor="action"
-                                                                className="col-form-label col-lg-2"
-                                                            >
-                                                                Action
-                                                            </Label>
-                                                            <Input
-                                                                id="action"
-                                                                name="action"
-                                                                type="textarea"
-                                                                className="form-control"
-                                                                placeholder="Add Action..."
-                                                                onChange={validation.handleChange}
-                                                                onBlur={validation.handleBlur}
-                                                                value={validation.values.action || ""}
-                                                                invalid={
-                                                                    validation.touched.action && validation.errors.action ? true : false
-                                                                }
-                                                            />
-                                                            {validation.touched.action && validation.errors.action ? (
-                                                                <FormFeedback type="invalid">{validation.errors.action}</FormFeedback>
-                                                            ) : null}
-                                                        </div>
-                                                    </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col>
-                                                        <div className="text-end">
-                                                            <button
-                                                                type="submit"
-                                                                className="btn btn-success save-user"
-                                                            >
-                                                                Save
-                                                            </button>
-                                                        </div>
-                                                    </Col>
-                                                </Row>
-                                            </Form>
-                                        </ModalBody>
-                                    </Modal>
-                                    {/*-----------------Add & Edit complain form Ends------------------*/}
-
-                                </CardBody>
-                            </Card>
-                        </Col>
-                    </Row>
-                </Container>
+              <Link
+                to="#"
+                className="text-danger"
+                onClick={() => onClickDelete(row.original)}
+              >
+                <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
+                <UncontrolledTooltip placement="top" target="deletetooltip">
+                  Delete
+                </UncontrolledTooltip>
+              </Link>
             </div>
-            {/*------------------ Render Breadcrumbs Ends----------------- */}
-        </React.Fragment>
-    );
-};
+          )
+        },
+      },
+    ],
+    []
+  )
 
-export default withRouter(Complain);
+  return (
+    <React.Fragment>
+      <ComplainDetailsModal isOpen={modal1} toggle={toggleViewModal1} />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDelete}
+        onCloseClick={() => setDeleteModal(false)}
+      />
+      <div className="page-content">
+        <Container fluid>
+          <Breadcrumbs title="Complain" breadcrumbItem="Complain List" />
+          <Row>
+            <Col lg="12">
+              <Card>
+                <CardBody>
+                  <TableContainer
+                    columns={columns}
+                    data={complainList}
+                    isGlobalFilter={true}
+                    customPageSize={10}
+                    className=""
+                  />
+                  <Modal isOpen={modal} toggle={toggle}>
+                    <ModalHeader toggle={toggle} tag="h4">
+                      {isEdit
+                        ? "Edit Complaint Feedback"
+                        : "Add Complaint Feedback"}
+                    </ModalHeader>
+                    <ModalBody>
+                      <Form
+                        onSubmit={validation.handleSubmit}
+                        encType="multipart/form-data"
+                      >
+                        <Row form>
+                          <Col xs={12}>
+                            {/* Complain */}
+                            <div className="mb-3">
+                              <Label htmlFor="complainText"> Complain </Label>
+                              <Input
+                                id="complainText"
+                                name="complainText"
+                                type="textarea"
+                                rows={5}
+                                className="form-control"
+                                disabled={true} // Read-only
+                                value={validation.values.complainText || ""} // Display complainText for both Add and Edit
+                                invalid={
+                                  validation.touched.complainText &&
+                                  validation.errors.complainText
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.complainText &&
+                              validation.errors.complainText ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.complainText}
+                                </FormFeedback>
+                              ) : null}
+                            </div>
+
+                            {/* Action */}
+                            <div className="mb-3">
+                              <Label htmlFor="action"> Action </Label>
+                              <Input
+                                id="action"
+                                name="action"
+                                type="textarea"
+                                rows={4}
+                                className="form-control"
+                                placeholder="Enter Complain Action"
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.action || ""} // Ensure action value is set correctly
+                                invalid={
+                                  validation.touched.action &&
+                                  validation.errors.action
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.action &&
+                              validation.errors.action ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.action}
+                                </FormFeedback>
+                              ) : null}
+                            </div>
+                          </Col>
+                        </Row>
+
+                        {/* Submit button */}
+                        <Row>
+                          <Col>
+                            <div className="text-end d-flex gap-3">
+                              <button
+                                type="submit"
+                                className="btn btn-success save-user"
+                              >
+                                Save{" "}
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={toggle}
+                              >
+                                Close
+                              </button>
+                            </div>
+                          </Col>
+                        </Row>
+                      </Form>
+                    </ModalBody>
+                  </Modal>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </div>
+    </React.Fragment>
+  )
+}
+export default withRouter(Complain)

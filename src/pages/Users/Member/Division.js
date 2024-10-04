@@ -51,7 +51,7 @@ const Division = () => {
       }))
       setDivisionList(mappedData)
     } catch (error) {
-      console.error("Error fetching party:", error)
+      console.error("Error fetching division:", error)
     }
   }
 

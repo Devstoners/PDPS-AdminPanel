@@ -88,6 +88,24 @@ const deleteProject = async projectId => {
 }
 
 
+const  countProject = async () => {
+  let authToken = localStorage.getItem("auth-token");
+  let result;
+  try {
+    await apiInstance.get("/sanctum/csrf-cookie");
+    const response = await apiInstance.get("/api/countProject", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    console.error("Error fetching project count:", error);
+    result = error;
+  }
+  return result;
+};
+
 const getSanctum = () => get("http://127.0.0.1:8000/sanctum/csrf-cookie")
 const ProjectService = {
   getSanctum,
@@ -96,6 +114,7 @@ const ProjectService = {
   getProject,
   deleteProject,
   editProject,
+  countProject,
 }
 
 export default ProjectService

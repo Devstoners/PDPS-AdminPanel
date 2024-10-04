@@ -22,8 +22,8 @@ import  Project from "../pages/Projects/index"
 
 //Users
 import Officer from "../pages/Users/Officer/index"
-import OPosition from "../pages/Users/Officer/Position"
-import OSubject from "../pages/Users/Officer/Subject"
+import OPost from "../pages/Users/Officer/Post"
+import ODuty from "../pages/Users/Officer/Duty"
 
 import Member from "../pages/Users/Member/index"
 import MPosition from "../pages/Users/Member/Position"
@@ -67,8 +67,8 @@ const authProtectedRoutes = [
 
   //Users
   { path: "/officer", component: Officer },
-  { path: "/officer-position", component: OPosition },
-  { path: "/officer-subject", component: OSubject },
+  { path: "/officer-post", component: OPost },
+  { path: "/officer-duty", component: ODuty },
 
   { path: "/member", component: Member },
   { path: "/member-position", component: MPosition },
