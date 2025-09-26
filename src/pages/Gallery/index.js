@@ -225,7 +225,7 @@ const Project = props => {
   const columns = useMemo(
     () => [
       {
-        Header: "ID",
+        Header: "No",
         accessor: "displayId",
         disableFilters: true,
       },

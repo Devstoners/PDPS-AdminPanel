@@ -53,9 +53,11 @@ const Complain = props => {
         // Format the created_at date
         const dbdateTime = new Date(item.created_at)
         const dbdate = dbdateTime.toISOString().split("T")[0]
+        const dbTime = dbdateTime.toLocaleTimeString()
 
         // Get the action from the related complain_action object (if exists)
         const action = item.complain_action ? item.complain_action.action : null
+        const actionCreatedAt = item.complain_action ? item.complain_action.created_at : null
 
         return {
           displayId: allComplainArray.length - index,
@@ -66,10 +68,12 @@ const Complain = props => {
           cname: item.cname,
           tel: item.tele,
           cdate: dbdate,
-          image1: item.img1,
-          image2: item.img2,
-          image3: item.img3,
+          ctime: dbTime,
+          img1: item.img1,
+          img2: item.img2,
+          img3: item.img3,
           action: action,
+          actionCreatedAt: actionCreatedAt,
         }
       })
 
@@ -242,7 +246,10 @@ const Complain = props => {
   }
 
   //Model1 toggle
-  const toggleViewModal1 = () => setModal1(!modal1)
+  const toggleViewModal1 = (complaintData) => {
+    setComplain(complaintData)
+    setModal1(!modal1)
+  }
 
   //Handle Add click
   const handleAddClick = complain => {
@@ -348,7 +355,7 @@ const Complain = props => {
 
   return (
     <React.Fragment>
-      <ComplainDetailsModal isOpen={modal1} toggle={toggleViewModal1} />
+      <ComplainDetailsModal isOpen={modal1} toggle={toggleViewModal1} complaint={complain} />
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDelete}

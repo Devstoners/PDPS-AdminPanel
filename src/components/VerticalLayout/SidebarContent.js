@@ -243,7 +243,20 @@ const SidebarContent = props => {
                 </li>
               </ul>
             </li>
-
+            <li>
+              <Link to="/#" className="has-arrow ">
+                <i className="bx bx-download"></i>
+                <span>{props.t("Download")}</span>
+              </Link>
+              <ul className="sub-menu">
+                <li>
+                  <Link to="/download-acts">{props.t("Acts")}</Link>
+                </li>
+                <li>
+                  <Link to="/download-committee-report">{props.t("Committee Report")}</Link>
+                </li>
+              </ul>
+            </li>
             <li>
               <Link to="/gallery">
                 <i className="bx bx-images"></i>

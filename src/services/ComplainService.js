@@ -28,7 +28,7 @@ const addAction = async (data) => {
   const authToken = localStorage.getItem("auth-token");
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response = await apiInstance.post("/api/complains", data, {
+    const response = await apiInstance.post("/api/complainActions", data, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -49,7 +49,7 @@ const editAction = async (formData) => {
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
     const id = formData.get('id');
-    const response =  await apiInstance.post(`/api/complains/${id}`, formData, {
+    const response =  await apiInstance.post(`/api/complainActions/${id}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -69,7 +69,7 @@ const deleteComplain = async (id) => {
   let authToken = localStorage.getItem("auth-token");
   try {
     await apiInstance.get("/sanctum/csrf-cookie");
-    const response =  await apiInstance.delete(`/api/complains/${id}`, {
+    const response =  await apiInstance.delete(`/api/complainActions/${id}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -107,6 +107,7 @@ const ComplainService = {
   getAllcomplain,
   addAction,
   editAction,
+  deleteComplain,
   getSanctum,
   getCount,
 }
